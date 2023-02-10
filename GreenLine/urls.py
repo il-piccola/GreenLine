@@ -21,4 +21,6 @@ from .views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', login, name="login"),
+    path('main', main, name="main"),
+    path('show_pdf', show_pdf, name="show_pdf"),
 ]

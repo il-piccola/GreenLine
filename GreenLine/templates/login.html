@@ -10,11 +10,11 @@
     <h1 class="display-4 text-primary">{{title}}</h1>
     <p>{{msg}}</p>
     <form action="{% url 'login' %}" method="POST">
-    {% csrf_token %}
     <table class="table">
+    {% csrf_token %}
     {{ form.as_table }}
         <tr><td></td><td>
-            <input type="submit" value="login" class="btn btn-primary mt-2">
+            <input type="submit" value="ログイン" class="btn btn-primary mt-2">
         </td></tr>
     </table>
     </form>

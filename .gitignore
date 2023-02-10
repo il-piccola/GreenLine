@@ -1,4 +1,2 @@
-db.sqlite3
-static/
 GreenLine/__pycache__/
 GreenLine/migrations/__pycache__/
