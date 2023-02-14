@@ -26,6 +26,8 @@ SECRET_KEY = 'django-insecure-0e$!9am2s1&(m#^zn04t0+wl6=bm8*2h9ak@tg1h)06enc%=)7
 DEBUG = True
 
 ALLOWED_HOSTS = []
+if not DEBUG :
+    ALLOWED_HOSTS = ['54.150.78.160',]
 
 
 # Application definition
@@ -80,7 +82,14 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
+if not DEBUG = {
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
