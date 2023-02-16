@@ -16,6 +16,8 @@ Including another URLconf
 from django import views
 from django.contrib import admin
 from django.urls import path
+from django.contrib.staticfiles.urls import static
+from .settings import *
 from .views import *
 
 urlpatterns = [
@@ -29,3 +31,4 @@ urlpatterns = [
     path('add_pdf', add_pdf, name="add_pdf"),
     path('show_pdf_list', show_pdf_list, name="show_pdf_list"),
 ]
+urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)

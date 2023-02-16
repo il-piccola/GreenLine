@@ -7,16 +7,18 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
 </head>
 <body class="container" style="height: 95vh;">
-    <img src="{% static 'logo.png' %}" style="width: 100%;">
-    <div id="main_header" class="container" style="height: 10vh; padding-bottom: 10px;">
-        <div id="info_employee" class="row align-items-center">
-            <div class="col-6 text-start"><h1 class="display-4 text-primary">{{ title }}</h1></div>
-            <div class="col-4 container">
-                <div class="row"><div class="col text-end">氏名：{{ name }}</div></div>
-                <div class="row"><div class="col text-end">所属：{{ organizaion }}</div></div>
-            </div>
-            <div class="col container">
-                <div class="row"><div class="col text-end"><a href="{% url 'admin_login' %}">ログアウト</a></div></div>
+    <div class="row align-items-start">
+        <div class="col-2"><img src="{% static 'title.png' %}" width="100%"></div>
+        <div id="main_header" class="col-10 container" style="height: 10vh; padding-bottom: 10px;">
+            <div class="row align-items-center">
+                <div class="col-6 text-start"><h1 class="display-4 text-primary">{{ title }}</h1></div>
+                <div class="col-4 container">
+                    <div class="row"><div class="col text-end">氏名：{{ name }}</div></div>
+                    <div class="row"><div class="col text-end">所属：{{ organizaion }}</div></div>
+                </div>
+                <div class="col-2 container">
+                    <div class="row"><div class="col text-end"><a href="{% url 'admin_login' %}">ログアウト</a></div></div>
+                </div>
             </div>
         </div>
     </div>
