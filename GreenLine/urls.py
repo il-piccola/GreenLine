@@ -23,4 +23,9 @@ urlpatterns = [
     path('', login, name="login"),
     path('main', main, name="main"),
     path('show_pdf', show_pdf, name="show_pdf"),
+    path('admin_login', admin_login, name="admin_login"),
+    path('admin_main', admin_main, name="admin_main"),
+    path('show_employees_list', show_employees_list, name="show_employees_list"),
+    path('add_pdf', add_pdf, name="add_pdf"),
+    path('show_pdf_list', show_pdf_list, name="show_pdf_list"),
 ]
