@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.http import FileResponse, HttpResponse
@@ -67,8 +68,14 @@ def show_pdf(request) :
         return HttpResponse("ファイルが見つかりません")
     try :
         path = pdf.first().get_path()
+        ext = os.path.splitext(path)[1][1:]
+        content_type = 'application/pdf'
+        if ext == "xlsx" :
+            content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        elif ext == "xls" :
+            content_type = 'application/vnd.ms-excel'
         with open(file=path, mode='rb') as f:
-            response = HttpResponse(f.read(), content_type='application/pdf')
+            response = HttpResponse(f.read(), content_type=content_type)
             response['Content-Disposition'] = 'inline;filename="'+ f.name + '"'
             return response
     except FileNotFoundError :
