@@ -50,11 +50,12 @@ def main(request) :
     else :
         form = MainForm(data=request.POST)
         if form.is_valid() :
-            pdf = Pdf.objects.filter(phone=form.cleaned_data['phone'])
-            if pdf and pdf.count() > 0 :
-                params['pdf'] = pdf
+            files = File.objects.filter(phone=request.POST['phone'])
+            if File and File.objects.count() > 0 :
+                files = File.objects.filter(phone=request.POST['phone'])
+                params['files'] = files
             else :
-                params['msg'] = '該当するPDFファイルがありません'
+                params['msg'] = '該当するファイルがありません'
             params['form'] = form
         else :
             params['msg'] = '入力に誤りがあります'
@@ -139,22 +140,22 @@ def show_employees_list(request) :
     return render(request, 'show_employees_list.html', params)
 
 @csrf_exempt
-def add_pdf(request) :
+def add_file(request) :
     pass
 
 @csrf_exempt
-def show_pdf_list(request) :
+def show_file_list(request) :
     employee = get_employee(request, True)
     if not employee :
         return redirect('admin_login')
     params = {
-        'title' : 'PDF List',
+        'title' : 'File List',
         'msg' : '',
         'name' : employee.name,
         'organizaion' : employee.organization.name,
-        'list' : Pdf.objects.all(),
+        'list' : File.objects.all(),
     }
-    return render(request, 'show_pdf_list.html', params)
+    return render(request, 'show_file_list.html', params)
 
 def get_employee(request, auth_flg) :
     if not 'employee' in request.session :

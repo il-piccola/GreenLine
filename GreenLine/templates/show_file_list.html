@@ -39,7 +39,9 @@
                 <tr>
                     <th scope="row">{{ e.id }}</th>
                     <td>{{ e.phone }}</td>
-                    <td>{{ e.file }}</td>
+                    <td>
+                        <a href="{{ e.file.url }}" target="_blank" rel="noopener noreferrer">{{ e.file }}</a>
+                    </td>
                     <td><button class="btn btn-primary btn-sm">削除</button></td>
                 </tr>
             {% endfor %}

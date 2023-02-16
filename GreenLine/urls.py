@@ -28,7 +28,7 @@ urlpatterns = [
     path('admin_login', admin_login, name="admin_login"),
     path('admin_main', admin_main, name="admin_main"),
     path('show_employees_list', show_employees_list, name="show_employees_list"),
-    path('add_pdf', add_pdf, name="add_pdf"),
-    path('show_pdf_list', show_pdf_list, name="show_pdf_list"),
+    path('add_file', add_file, name="add_file"),
+    path('show_file_list', show_file_list, name="show_file_list"),
 ]
 urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)

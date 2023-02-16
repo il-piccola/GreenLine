@@ -38,9 +38,9 @@
     <div id="main_pdf" class="container" style="height: 65vh;">
         <div class="row" style="height: 5%; padding-bottom: 10px;">
             <ul>
-                {% for p in pdf %}
+                {% for f in files %}
                 <!-- <li style="display: inline;"><a href="javascript:showPDF('{{ p.phone }}');">{{ p.file }}</a></li> -->
-                <li style="display: inline;"><a href="{{ p.file.url }}" target="_blank" rel="noopener noreferrer">{{ p.file }}</a></li>
+                <li style="display: inline;"><a href="{{ f.file.url }}" target="_blank" rel="noopener noreferrer">{{ f.file }}</a></li>
                 {% endfor %}
             </ul>
         </div>

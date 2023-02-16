@@ -17,7 +17,7 @@ def upload_path(instance, filename) :
     newname = instance.phone
     return os.path.join('pdf', newname)
 
-class Pdf(models.Model) :
+class File(models.Model) :
     phone = models.CharField(max_length=200, default='')
     file = models.FileField(upload_to=upload_path)
     def get_path(self) :
