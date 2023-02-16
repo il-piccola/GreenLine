@@ -20,5 +20,7 @@ def upload_path(instance, filename) :
 class File(models.Model) :
     phone = models.CharField(max_length=200, default='')
     file = models.FileField(upload_to=upload_path)
+    def get_ext(self) :
+        return os.path.splitext(self.file)[1][:1]
     def get_path(self) :
         return os.path.join(MEDIA_ROOT, self.file.path)

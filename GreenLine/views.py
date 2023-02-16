@@ -141,6 +141,9 @@ def show_employees_list(request) :
 
 @csrf_exempt
 def add_file(request) :
+    employee = get_employee(request, True)
+    if not employee :
+        return redirect('admin_login')
     pass
 
 @csrf_exempt
