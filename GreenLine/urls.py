@@ -25,6 +25,7 @@ urlpatterns = [
     path('', login, name="login"),
     path('main', main, name="main"),
     path('show_file', show_file, name="show_file"),
+    path('change_password', change_password, name="change_password"),
     path('admin_login', admin_login, name="admin_login"),
     path('admin_main', admin_main, name="admin_main"),
     path('show_employees_list', show_employees_list, name="show_employees_list"),

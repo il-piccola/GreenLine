@@ -53,7 +53,8 @@ def main(request) :
             files = File.objects.filter(phone=request.POST['phone'])
             if File and File.objects.count() > 0 :
                 files = File.objects.filter(phone=request.POST['phone'])
-                print(files.first().get_path())
+                print(files.count())
+                # print(files.first().get_path())
                 params['files'] = files
             else :
                 params['msg'] = '該当するファイルがありません'
@@ -82,6 +83,35 @@ def show_file(request) :
             return response
     except FileNotFoundError :
         return HttpResponse("ファイルが見つかりません")
+
+@csrf_exempt
+def change_password(request) :
+    employee = get_employee(request, False)
+    if not employee :
+        return redirect('login')
+    params = {
+        'title' : 'Change Password',
+        'msg' : 'パスワードを変更できます',
+        'name' : employee.name,
+        'organizaion' : employee.organization.name,
+        'form' : PasswordForm(),
+    }
+    if (request.method != 'POST') :
+        return render(request, 'main.html', params)
+    else :
+        form = PasswordForm(data=request.POST)
+        if form.is_valid() :
+            old = request.POST['old']
+            new = request.POST['new']
+            confirm = request.POST['confirm']
+            if employee.password == old and new == confirm :
+                pass
+            else :
+                params['msg'] = '該当するファイルがありません'
+            params['form'] = form
+        else :
+            params['msg'] = '入力に誤りがあります'
+    return render(request, 'main.html', params)
 
 @csrf_exempt
 def admin_login(request) :
