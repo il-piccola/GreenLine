@@ -22,7 +22,7 @@ def login(request) :
     obj = Employee()
     form = LoginForm(data=request.POST, instance=obj)
     if form.is_valid() :
-        data = Employee.objects.filter(mail=request.POST['mail'])
+        data = Employee.objects.filter(phone=request.POST['phone'])
         if data.count() <= 0 :
             params['msg'] = '未登録のメールアドレスです'
         else :
@@ -53,6 +53,7 @@ def main(request) :
             files = File.objects.filter(phone=request.POST['phone'])
             if File and File.objects.count() > 0 :
                 files = File.objects.filter(phone=request.POST['phone'])
+                print(files.first().get_path())
                 params['files'] = files
             else :
                 params['msg'] = '該当するファイルがありません'
@@ -62,13 +63,13 @@ def main(request) :
     return render(request, 'main.html', params)
 
 @csrf_exempt
-def show_pdf(request) :
+def show_file(request) :
     phone = request.POST.get('phone')
-    pdf = Pdf.objects.filter(phone=phone)
-    if not pdf or pdf.count() <= 0 :
+    file = File.objects.filter(phone=phone)
+    if not file or file.count() <= 0 :
         return HttpResponse("ファイルが見つかりません")
     try :
-        path = pdf.first().get_path()
+        path = File.first().get_path()
         ext = os.path.splitext(path)[1][1:]
         content_type = 'application/pdf'
         if ext == "xlsx" :

@@ -1,5 +1,6 @@
 import os
 from django.db import models
+from django.core.validators import RegexValidator
 from .settings import *
 
 class Organization(models.Model) :
@@ -9,7 +10,8 @@ class Employee(models.Model) :
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     name = models.CharField(max_length=200, default='')
     kana = models.CharField(max_length=200, default='')
-    mail = models.EmailField(max_length=200, default='')
+    phone_regex = RegexValidator(regex=r'^[0-9]+$', message='電話番号は半角数字のみ入力できます')
+    phone = models.CharField(validators=[phone_regex], max_length=200, default='')
     password = models.CharField(max_length=200, default='')
     auth = models.BooleanField(default=False)
 
