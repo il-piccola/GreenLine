@@ -23,7 +23,9 @@ def login(request) :
     if form.is_valid() :
         data = Employee.objects.filter(phone=request.POST['phone'])
         if data.count() <= 0 :
-            params['msg'] = '未登録のメールアドレスです'
+            params['msg'] = '未登録の電話番号です'
+        elif data.first().password != request.POST['password'] :
+            params['msg'] = 'パスワードが間違っています'
         else :
             request.session['employee'] = data.first().id
             return redirect('main')
@@ -99,7 +101,6 @@ def change_password(request) :
         return render(request, 'change_password.html', params)
     else :
         form = PasswordForm(data=request.POST)
-        print(request.POST)
         if form.is_valid() :
             old = request.POST['old']
             new = request.POST['new']
@@ -135,15 +136,16 @@ def admin_login(request) :
     obj = Employee()
     form = LoginForm(data=request.POST, instance=obj)
     if form.is_valid() :
-        data = Employee.objects.filter(mail=request.POST['mail'])
+        data = Employee.objects.filter(phone=request.POST['phone'])
         if data.count() <= 0 :
-            params['msg'] = '未登録のメールアドレスです'
+            params['msg'] = '未登録の電話番号です'
+        elif data.first().password != request.POST['password'] :
+            params['msg'] = 'パスワードが間違っています'
+        elif not data.first().auth :
+            params['msg'] = '管理者権限がありません'
         else :
-            if data.first().auth :
-                request.session['employee'] = data.first().id
-                return redirect('admin_main')
-            else :
-                params['msg'] = '管理者権限がありません'
+            request.session['employee'] = data.first().id
+            return redirect('admin_main')
     else :
         params['msg'] = '入力に誤りがあります'
     params['form'] = form
@@ -163,18 +165,46 @@ def admin_main(request) :
     return render(request, 'admin_main.html', params)
 
 @csrf_exempt
-def show_employees_list(request) :
+def show_employees(request) :
     employee = get_employee(request, True)
     if not employee :
         return redirect('admin_login')
     params = {
-        'title' : 'Employees List',
+        'title' : 'Employees',
         'msg' : '',
         'name' : employee.name,
         'organizaion' : employee.organization.name,
         'list' : Employee.objects.all(),
     }
-    return render(request, 'show_employees_list.html', params)
+    return render(request, 'show_employees.html', params)
+
+@csrf_exempt
+def add_employee(request) :
+    employee = get_employee(request, True)
+    if not employee :
+        return redirect('admin_login')
+    params = {
+        'title' : 'New Employee',
+        'msg' : '',
+        'name' : employee.name,
+        'organizaion' : employee.organization.name,
+        'form' : EmployeeForm(),
+    }
+    if request.POST :
+        form = EmployeeForm(data=request.POST)
+        if form.is_valid() :
+            if not form.confirm :
+                if Employee.objects.filter(phone=request.POST['phone']).count() > 0 :
+                    params['msg'] = '既に登録されている電話番号です'
+                else :
+                    form.confirm = True
+                    params['msg'] = 'この内容で登録します、よろしいですか？'
+        else :
+            params['msg'] = '入力に誤りがあります'
+        params['form'] = form
+    else :
+        params['msg'] = '従業員を登録できます'
+    return render(request, 'add_employee.html', params)
 
 @csrf_exempt
 def add_file(request) :
@@ -184,18 +214,18 @@ def add_file(request) :
     pass
 
 @csrf_exempt
-def show_file_list(request) :
+def show_files(request) :
     employee = get_employee(request, True)
     if not employee :
         return redirect('admin_login')
     params = {
-        'title' : 'File List',
+        'title' : 'Files',
         'msg' : '',
         'name' : employee.name,
         'organizaion' : employee.organization.name,
         'list' : File.objects.all(),
     }
-    return render(request, 'show_file_list.html', params)
+    return render(request, 'show_files.html', params)
 
 def get_employee(request, auth_flg) :
     if not 'employee' in request.session :

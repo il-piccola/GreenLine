@@ -16,33 +16,37 @@
                 <div class="row"><div class="col text-end">氏名：{{ name }}</div></div>
                 <div class="row"><div class="col text-end">所属：{{ organizaion }}</div></div>
             </div>
-            <div class="col container">
+            <div class="col-2 container">
                 <div class="row"><div class="col text-end"><a href="{% url 'admin_login' %}">ログアウト</a></div></div>
+                <div class="row"><div class="col text-end"><a href="{% url 'admin_main' %}">戻る</a></div></div>
             </div>
             </div>
-        </div>
         </div>
     </div>
     <p>{{ msg }}</p>
-    <div id="pdf_list" class="container mt-5">
+    <div id="employees_list" class="container mt-5">
         <table class=table>
             <thead>
                 <tr>
                     <th scope="col">ID</th>
+                    <th scope="col">所属</th>
+                    <th scope="col">名前</th>
+                    <th scope="col">カナ</th>
                     <th scope="col">電話番号</th>
-                    <th scope="col">ファイル名</th>
-                    <th scope="col">削除</th>
+                    <th scope="col">パスワード</th>
+                    <th scope="col">管理者権限</th>
                 </tr>
             </thead>
             <tbody>
             {% for e in list %}
                 <tr>
                     <th scope="row">{{ e.id }}</th>
+                    <td>{{ e.organization.name }}</td>
+                    <td>{{ e.name }}</td>
+                    <td>{{ e.kana }}</td>
                     <td>{{ e.phone }}</td>
-                    <td>
-                        <a href="{{ e.file.url }}" target="_blank" rel="noopener noreferrer">{{ e.file }}</a>
-                    </td>
-                    <td><button class="btn btn-primary btn-sm">削除</button></td>
+                    <td>{{ e.password }}</td>
+                    <td>{{ e.auth }}</td>
                 </tr>
             {% endfor %}
             </tbody>
