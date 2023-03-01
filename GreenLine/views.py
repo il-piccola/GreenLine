@@ -1,4 +1,5 @@
 import os
+import re
 from django.shortcuts import render, redirect
 from django.http import FileResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -193,17 +194,27 @@ def add_employee(request) :
     if request.POST :
         form = EmployeeForm(data=request.POST)
         if form.is_valid() :
-            if not form.confirm :
+            if not request.session['confirm'] :
                 if Employee.objects.filter(phone=request.POST['phone']).count() > 0 :
                     params['msg'] = '既に登録されている電話番号です'
                 else :
-                    form.confirm = True
+                    request.session['confirm'] = True
                     params['msg'] = 'この内容で登録します、よろしいですか？'
+            else :
+                model = form.instance
+                model.password = request.session['password']
+                model.save()
+                del request.session['password']
+                del request.session['confirm']
+                return redirect('show_employees')
         else :
             params['msg'] = '入力に誤りがあります'
         params['form'] = form
     else :
+        request.session['password'] = make_password()
+        request.session['confirm'] = False
         params['msg'] = '従業員を登録できます'
+    params['password'] = request.session['password']
     return render(request, 'add_employee.html', params)
 
 @csrf_exempt
@@ -236,3 +247,12 @@ def get_employee(request, auth_flg) :
     if auth_flg and not employee.auth :
         return None
     return employee
+
+def make_password() :
+    ret = ''
+    while not re.match(r'[0-9]+', ret) :
+        l = list('0123456789abcdefghijklmnopqrstuvwxyz')
+        random.shuffle(l)
+        s = ''.join(l)
+        ret = s[0:7]
+    return ret
