@@ -1,6 +1,5 @@
 import os
-from django.shortcuts import render
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
 from django.http import FileResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import *
@@ -97,21 +96,28 @@ def change_password(request) :
         'form' : PasswordForm(),
     }
     if (request.method != 'POST') :
-        return render(request, 'main.html', params)
+        return render(request, 'change_password.html', params)
     else :
         form = PasswordForm(data=request.POST)
+        print(request.POST)
         if form.is_valid() :
             old = request.POST['old']
             new = request.POST['new']
             confirm = request.POST['confirm']
             if employee.password == old and new == confirm :
-                pass
-            else :
-                params['msg'] = '該当するファイルがありません'
+                employee.password = new
+                employee.save()
+                request.session['msg'] = 'パスワードを変更しました'
+                del request.session['employee']
+                return redirect('login')
+            elif employee.password != old :
+                params['msg'] = '旧パスワードが間違っています'
+            elif new != confirm :
+                params['msg'] = '新パスワード(確認)が間違っています'
             params['form'] = form
         else :
             params['msg'] = '入力に誤りがあります'
-    return render(request, 'main.html', params)
+    return render(request, 'change_password.html', params)
 
 @csrf_exempt
 def admin_login(request) :
