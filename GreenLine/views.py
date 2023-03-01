@@ -180,6 +180,48 @@ def show_employees(request) :
     return render(request, 'show_employees.html', params)
 
 @csrf_exempt
+def employee(request, id, edit) :
+    print(id, edit)
+    employee = get_employee(request, True)
+    if not employee :
+        return redirect('admin_login')
+    target = Employee.objects.filter(id=id).first()
+    params = {
+        'title' : 'Employee',
+        'msg' : '',
+        'name' : employee.name,
+        'organizaion' : employee.organization.name,
+        'id' : id,
+        'edit' : edit,
+        'form' : EmployeeForm(instance=target)
+    }
+    if request.POST :
+        form = EmployeeForm(data=request.POST)
+        if edit == 1 :
+            if form.is_valid() :
+                params['msg'] = 'この内容で更新してよいですか？'
+                params['form'] = form
+            else :
+                params['msg'] = '入力に誤りがあります'
+        elif edit == 3 :
+            target.phone = request.POST['phone']
+            target.name = request.POST['name']
+            target.kana = request.POST['kana']
+            target.password = request.POST['password']
+            print(request.POST['organization'])
+            target.organization = Organization.objects.filter(id=request.POST['organization']).first()
+            target.save()
+            return redirect('show_employees')
+    else :
+        if edit == 2 :
+            params['msg'] = 'この従業員を削除してよいですか？'
+        elif edit == 4 :
+            target = Employee.objects.filter(id=id)
+            target.delete()
+            return redirect('show_employees')
+    return render(request, 'employee.html', params)
+
+@csrf_exempt
 def add_employee(request) :
     employee = get_employee(request, True)
     if not employee :
@@ -194,25 +236,25 @@ def add_employee(request) :
     if request.POST :
         form = EmployeeForm(data=request.POST)
         if form.is_valid() :
-            if not request.session['confirm'] :
+            if not request.session['add_employee_confirm'] :
                 if Employee.objects.filter(phone=request.POST['phone']).count() > 0 :
                     params['msg'] = '既に登録されている電話番号です'
                 else :
-                    request.session['confirm'] = True
+                    request.session['add_employee_confirm'] = True
                     params['msg'] = 'この内容で登録します、よろしいですか？'
             else :
                 model = form.instance
                 model.password = request.session['password']
                 model.save()
                 del request.session['password']
-                del request.session['confirm']
+                del request.session['add_employee_confirm']
                 return redirect('show_employees')
         else :
             params['msg'] = '入力に誤りがあります'
         params['form'] = form
     else :
         request.session['password'] = make_password()
-        request.session['confirm'] = False
+        request.session['add_employee_confirm'] = False
         params['msg'] = '従業員を登録できます'
     params['password'] = request.session['password']
     return render(request, 'add_employee.html', params)

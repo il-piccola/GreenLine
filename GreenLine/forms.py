@@ -18,11 +18,14 @@ class PasswordForm(forms.Form) :
     confirm = forms.CharField(label="新パスワード(確認)", widget=forms.PasswordInput(attrs={'class':'form-control'}))
 
 class EmployeeForm(forms.ModelForm) :
-    organization = forms.ModelChoiceField(label="所属", queryset=Organization.objects, to_field_name='name', widget=forms.Select(attrs={'class':'form-select'}))
+    organization = forms.ModelChoiceField(label="所属", queryset=Organization.objects, widget=forms.Select(attrs={'class':'form-select'}))
     name = forms.CharField(label="氏名", widget=forms.TextInput(attrs={'class':'form-control'}))
     kana = forms.CharField(label="カナ", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[ァ-ヴ]+$'}))
     phone = forms.CharField(label="電話番号", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[0-9]+$'}))
+    password = forms.CharField(label="パスワード", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[0-9]+$'}))
     auth = forms.BooleanField(label="管理者権限", required=False, widget=forms.CheckboxInput(attrs={'class':'form-check-input'}))
     class Meta :
         model = Employee
-        fields = ['organization', 'name', 'kana', 'phone', 'auth', ]
+        fields = ['organization', 'name', 'kana', 'phone', 'password', 'auth', ]
+    def get_organization(self) :
+        return self.instance.organization.name

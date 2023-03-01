@@ -29,6 +29,7 @@ urlpatterns = [
     path('admin_login', admin_login, name="admin_login"),
     path('admin_main', admin_main, name="admin_main"),
     path('show_employees', show_employees, name="show_employees"),
+    path('employee/<int:id>/<int:edit>', employee, name="employee"),
     path('add_employee', add_employee, name="add_employee"),
     path('add_file', add_file, name="add_file"),
     path('show_files', show_files, name="show_files"),
