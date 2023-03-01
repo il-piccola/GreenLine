@@ -89,7 +89,7 @@ def change_password(request) :
     if not employee :
         return redirect('login')
     params = {
-        'title' : 'Change Password',
+        'title' : 'Password',
         'msg' : 'パスワードを変更できます',
         'name' : employee.name,
         'organizaion' : employee.organization.name,
