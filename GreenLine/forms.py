@@ -29,3 +29,12 @@ class EmployeeForm(forms.ModelForm) :
         fields = ['organization', 'name', 'kana', 'phone', 'password', 'auth', ]
     def get_organization(self) :
         return self.instance.organization.name
+
+class UploadForm(forms.ModelForm) :
+    class Meta :
+        model = File
+        fields = ['phone', 'file']
+        widgets = {
+            'phone' : forms.TextInput(attrs={'class':'form-control', 'pattern':'^[0-9]+$'}),
+            'file' : forms.FileInput(attrs={'class':'form-control'})
+        }

@@ -264,7 +264,21 @@ def add_file(request) :
     employee = get_employee(request, True)
     if not employee :
         return redirect('admin_login')
-    pass
+    params = {
+        'title' : 'Upload',
+        'msg' : 'PDFファイルをアップロードできます',
+        'name' : employee.name,
+        'organizaion' : employee.organization.name,
+        'form' : UploadForm(),
+    }
+    if request.POST :
+        form = UploadForm(request.POST, request.FILES)
+        if form.is_valid() :
+            form.save()
+            return redirect('show_files')
+        else :
+            params['msg'] = '入力に誤りがあります'
+    return render(request, 'add_file.html', params)
 
 @csrf_exempt
 def show_files(request) :

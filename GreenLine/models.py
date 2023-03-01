@@ -2,6 +2,7 @@ import os
 import random
 from django.db import models
 from django.core.validators import RegexValidator
+from django.core.validators import FileExtensionValidator
 from .settings import *
 
 class Organization(models.Model) :
@@ -20,13 +21,9 @@ class Employee(models.Model) :
     auth = models.BooleanField(default=False)
 
 def upload_path(instance, filename) :
-    newname = instance.phone
-    return os.path.join('pdf', newname)
+    filename = os.path.join('pdf', instance.phone)
+    return os.path.join(STATIC_URL, filename)
 
 class File(models.Model) :
     phone = models.CharField(max_length=200, default='')
-    file = models.FileField(upload_to=upload_path)
-    def get_ext(self) :
-        return os.path.splitext(self.file)[1][:1]
-    def get_path(self) :
-        return os.path.join(MEDIA_ROOT, self.file.path)
+    file = models.FileField(upload_to=upload_path, validators=[FileExtensionValidator(['pdf'])])
