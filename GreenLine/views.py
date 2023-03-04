@@ -103,20 +103,16 @@ def change_password(request) :
     else :
         form = PasswordForm(data=request.POST)
         if form.is_valid() :
-            old = request.POST['old']
             new = request.POST['new']
             confirm = request.POST['confirm']
-            if employee.password == old and new == confirm :
+            if new == confirm :
                 employee.password = new
                 employee.save()
-                request.session['msg'] = 'パスワードを変更しました'
+                request.session['msg'] = 'パスワードを変更しました、再度ログインしてください'
                 del request.session['employee']
                 return redirect('login')
-            elif employee.password != old :
-                params['msg'] = '旧パスワードが間違っています'
-            elif new != confirm :
+            else :
                 params['msg'] = '新パスワード(確認)が間違っています'
-            params['form'] = form
         else :
             params['msg'] = '入力に誤りがあります'
     return render(request, 'change_password.html', params)
@@ -231,10 +227,11 @@ def add_employee(request) :
         'msg' : '',
         'name' : employee.name,
         'organizaion' : employee.organization.name,
-        'form' : EmployeeForm(),
+        'form' : AddEmployeeForm(),
     }
     if request.POST :
-        form = EmployeeForm(data=request.POST)
+        form = AddEmployeeForm(data=request.POST)
+        password = request.session['password']
         if form.is_valid() :
             if not request.session['add_employee_confirm'] :
                 if Employee.objects.filter(phone=request.POST['phone']).count() > 0 :
@@ -242,10 +239,10 @@ def add_employee(request) :
                 else :
                     request.session['add_employee_confirm'] = True
                     params['msg'] = 'この内容で登録します、よろしいですか？'
+                    form = AddEmployeeForm(data=request.POST.copy().update({'dummy':password}))
             else :
-                model = form.instance
-                model.password = request.session['password']
-                model.save()
+                form.instance.password = password
+                form.instance.save()
                 del request.session['password']
                 del request.session['add_employee_confirm']
                 return redirect('show_employees')
