@@ -31,10 +31,10 @@ class EmployeeForm(forms.ModelForm) :
         return self.instance.organization.name
 
 class UploadForm(forms.ModelForm) :
+    phone = forms.CharField(label="電話番号", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[0-9]+$'}))
+    file = forms.FileField(label="PDFファイル", widget=forms.FileInput(attrs={'class':'form-control'}))
     class Meta :
         model = File
         fields = ['phone', 'file']
-        widgets = {
-            'phone' : forms.TextInput(attrs={'class':'form-control', 'pattern':'^[0-9]+$'}),
-            'file' : forms.FileInput(attrs={'class':'form-control'})
-        }
+        def save() :
+            parent.save()

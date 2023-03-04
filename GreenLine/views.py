@@ -274,8 +274,11 @@ def add_file(request) :
     if request.POST :
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid() :
-            form.save()
-            return redirect('show_files')
+            if File.objects.filter(phone=request.POST['phone']).count() > 0 :
+                params['msg'] = '既に登録されている電話番号です'
+            else :
+                form.save()
+                return redirect('show_files')
         else :
             params['msg'] = '入力に誤りがあります'
     return render(request, 'add_file.html', params)
@@ -293,6 +296,12 @@ def show_files(request) :
         'list' : File.objects.all(),
     }
     return render(request, 'show_files.html', params)
+
+@csrf_exempt
+def del_file(request, id) :
+    for file in File.objects.filter(id=id) :
+        file.delete()
+    return redirect('show_files')
 
 def get_employee(request, auth_flg) :
     if not 'employee' in request.session :

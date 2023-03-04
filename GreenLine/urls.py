@@ -33,5 +33,6 @@ urlpatterns = [
     path('add_employee', add_employee, name="add_employee"),
     path('add_file', add_file, name="add_file"),
     path('show_files', show_files, name="show_files"),
+    path('del_file/<int:id>', del_file, name="del_file"),
 ]
 urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)

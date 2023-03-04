@@ -21,8 +21,8 @@ class Employee(models.Model) :
     auth = models.BooleanField(default=False)
 
 def upload_path(instance, filename) :
-    filename = os.path.join('pdf', instance.phone)
-    return os.path.join(STATIC_URL, filename)
+    filename = instance.phone + os.path.splitext(filename)[1]
+    return filename
 
 class File(models.Model) :
     phone = models.CharField(max_length=200, default='')
