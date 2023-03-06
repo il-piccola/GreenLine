@@ -91,6 +91,7 @@ if not DEBUG :
             'USER' : 'green',
             'PASSWORD' : 'green',
             'HOST': 'localhost',
+            'PORT': 3306,
         }
     }
 
