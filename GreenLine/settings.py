@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 if not DEBUG :
-    ALLOWED_HOSTS = ['54.150.78.160',]
+    ALLOWED_HOSTS = ['43.206.243.94',]
 
 
 # Application definition
@@ -88,8 +88,9 @@ if not DEBUG :
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'greenline',
-            'USER' : 'admin',
-            'PASSWORD' : 'greenline',
+            'USER' : 'green',
+            'PASSWORD' : 'green',
+            'HOST': 'localhost',
         }
     }
 
