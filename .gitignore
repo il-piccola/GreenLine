@@ -3,4 +3,4 @@ GreenLine/migrations/__pycache__/
 GreenLine/db.sqlite3
 GreenLine/media/*.pdf
 GreenLine/media/*.xlsx
-GreenLine/static/admin
+GreenLine/static/admin/
