@@ -52,11 +52,8 @@ def main(request) :
     else :
         form = MainForm(data=request.POST)
         if form.is_valid() :
-            files = File.objects.filter(phone=request.POST['phone'])
-            if File and File.objects.count() > 0 :
-                files = File.objects.filter(phone=request.POST['phone'])
-                print(files.count())
-                # print(files.first().get_path())
+            files = File.objects.filter(phone__contains=request.POST['phone'])
+            if files and files.count() > 0 :
                 params['files'] = files
             else :
                 params['msg'] = '該当するファイルがありません'
