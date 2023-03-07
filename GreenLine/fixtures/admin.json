@@ -1,0 +1,33 @@
+[
+    {
+        "model" : "GreenLine.Organization",
+        "pk" : 1,
+        "fields" : {
+            "name" : "system"
+        }
+    },
+    {
+        "model" : "GreenLine.Employee",
+        "pk" : 1,
+        "fields" : {
+            "organization" : 1,
+            "name" : "admin",
+            "kana" : "admin",
+            "phone" : "000",
+            "password" : "000",
+            "auth" : 1
+        }
+    },
+    {
+        "model" : "GreenLine.Employee",
+        "pk" : 2,
+        "fields" : {
+            "organization" : 1,
+            "name" : "guest",
+            "kana" : "guest",
+            "phone" : "111",
+            "password" : "111",
+            "auth" : 0
+        }
+    }
+]
