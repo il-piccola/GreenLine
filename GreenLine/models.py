@@ -1,5 +1,5 @@
 import os
-import random
+import datetime
 from django.db import models
 from django.core.validators import RegexValidator
 from django.core.validators import FileExtensionValidator
@@ -21,8 +21,8 @@ class Employee(models.Model) :
     auth = models.BooleanField(default=False)
 
 def upload_path(instance, filename) :
-    filename = instance.phone + os.path.splitext(filename)[1]
-    return filename
+    now = datetime.datetime.now().strftime('%Y%m%d%H%M%S_')
+    return now + filename
 
 class File(models.Model) :
     phone = models.CharField(max_length=200, default='')
