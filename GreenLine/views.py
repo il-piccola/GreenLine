@@ -1,5 +1,6 @@
 import os
 import re
+import random
 from django.shortcuts import render, redirect
 from django.http import FileResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -236,7 +237,9 @@ def add_employee(request) :
                 else :
                     request.session['add_employee_confirm'] = True
                     params['msg'] = 'この内容で登録します、よろしいですか？'
-                    form = AddEmployeeForm(data=request.POST.copy().update({'dummy':password}))
+                    data = request.POST.copy()
+                    data.update({'dummy':password})
+                    form = AddEmployeeForm(data=data)
             else :
                 form.instance.password = password
                 form.instance.save()
