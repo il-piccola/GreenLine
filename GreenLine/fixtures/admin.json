@@ -3,7 +3,7 @@
         "model" : "GreenLine.Organization",
         "pk" : 1,
         "fields" : {
-            "name" : "system"
+            "name" : "システム管理室"
         }
     },
     {
@@ -11,8 +11,8 @@
         "pk" : 1,
         "fields" : {
             "organization" : 1,
-            "name" : "admin",
-            "kana" : "admin",
+            "name" : "管理者",
+            "kana" : "カンリシャ",
             "phone" : "000",
             "password" : "000",
             "auth" : 1
@@ -23,8 +23,8 @@
         "pk" : 2,
         "fields" : {
             "organization" : 1,
-            "name" : "guest",
-            "kana" : "guest",
+            "name" : "ゲスト",
+            "kana" : "ゲスト",
             "phone" : "111",
             "password" : "111",
             "auth" : 0
