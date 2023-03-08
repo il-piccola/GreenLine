@@ -28,7 +28,6 @@
         <table class=table>
             <thead>
                 <tr>
-                    <th scope="col">ID</th>
                     <th scope="col">電話番号</th>
                     <th scope="col">名前</th>
                     <th scope="col">カナ</th>
@@ -40,7 +39,6 @@
             <tbody>
             {% for e in list %}
                 <tr>
-                    <th scope="row">{{ e.id }}</th>
                     <td><a href="{% url 'employee' e.id 0 %}">{{ e.phone }}</a></td>
                     <td>{{ e.name }}</td>
                     <td>{{ e.kana }}</td>

@@ -29,7 +29,6 @@
         <table class=table>
             <thead>
                 <tr>
-                    <th scope="col">ID</th>
                     <th scope="col">電話番号</th>
                     <th scope="col">ファイル名</th>
                     <th scope="col">削除</th>
@@ -38,7 +37,6 @@
             <tbody>
             {% for e in list %}
                 <tr>
-                    <th scope="row">{{ e.id }}</th>
                     <td>{{ e.phone }}</td>
                     <td>
                         <a href="{{ e.file.url }}" target="_blank" rel="noopener noreferrer">{{ e.file }}</a>
