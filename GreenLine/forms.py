@@ -19,7 +19,7 @@ class PasswordForm(forms.Form) :
 class EmployeeForm(forms.ModelForm) :
     organization = forms.ModelChoiceField(label="所属", queryset=Organization.objects, widget=forms.Select(attrs={'class':'form-select'}))
     name = forms.CharField(label="氏名", widget=forms.TextInput(attrs={'class':'form-control'}))
-    kana = forms.CharField(label="カナ", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[ァ-ヴ]+$'}))
+    kana = forms.CharField(label="カナ", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[ァ-ヴー]+$'}))
     phone = forms.CharField(label="電話番号", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[0-9]+$'}))
     password = forms.CharField(label="パスワード", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[0-9]+$'}))
     auth = forms.BooleanField(label="管理者権限", required=False, widget=forms.CheckboxInput(attrs={'class':'form-check-input'}))
@@ -32,7 +32,7 @@ class EmployeeForm(forms.ModelForm) :
 class AddEmployeeForm(forms.ModelForm) :
     organization = forms.ModelChoiceField(label="所属", queryset=Organization.objects, widget=forms.Select(attrs={'class':'form-select'}))
     name = forms.CharField(label="氏名", widget=forms.TextInput(attrs={'class':'form-control'}))
-    kana = forms.CharField(label="カナ", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[ァ-ヴ]+$'}))
+    kana = forms.CharField(label="カナ", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[ァ-ヴー]+$'}))
     phone = forms.CharField(label="電話番号", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[0-9]+$'}))
     dummy = forms.CharField(label="パスワード", required=False, widget=forms.TextInput(attrs={'class':'form-control', 'disabled':'disabled'}))
     auth = forms.BooleanField(label="管理者権限", required=False, widget=forms.CheckboxInput(attrs={'class':'form-check-input'}))

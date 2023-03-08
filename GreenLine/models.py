@@ -1,5 +1,3 @@
-import os
-import datetime
 from django.db import models
 from django.core.validators import RegexValidator
 from django.core.validators import FileExtensionValidator
@@ -13,7 +11,7 @@ class Organization(models.Model) :
 class Employee(models.Model) :
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     name = models.CharField(max_length=200, default='')
-    kana_regex = RegexValidator(regex=r'^[ァ-ヴ]+$', message='カナはカタカナのみ入力できます')
+    kana_regex = RegexValidator(regex=r'^[ァ-ヴー]+$', message='カナはカタカナのみ入力できます')
     kana = models.CharField(validators=[kana_regex], max_length=200, default='')
     phone_regex = RegexValidator(regex=r'^[0-9]+$', message='電話番号は半角数字のみ入力できます')
     phone = models.CharField(validators=[phone_regex], max_length=200, default='')
@@ -21,8 +19,7 @@ class Employee(models.Model) :
     auth = models.BooleanField(default=False)
 
 def upload_path(instance, filename) :
-    now = datetime.datetime.now().strftime('%Y%m%d%H%M%S_')
-    return now + filename
+    return instance.phone + '_' + filename
 
 class File(models.Model) :
     phone = models.CharField(max_length=200, default='')
