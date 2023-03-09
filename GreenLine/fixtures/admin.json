@@ -7,6 +7,13 @@
         }
     },
     {
+        "model" : "GreenLine.Organization",
+        "pk" : 2,
+        "fields" : {
+            "name" : "営業部"
+        }
+    },
+    {
         "model" : "GreenLine.Employee",
         "pk" : 1,
         "fields" : {
@@ -22,7 +29,7 @@
         "model" : "GreenLine.Employee",
         "pk" : 2,
         "fields" : {
-            "organization" : 1,
+            "organization" : 2,
             "name" : "ゲスト",
             "kana" : "ゲスト",
             "phone" : "111",

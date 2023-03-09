@@ -1,6 +1,4 @@
 import os
-import re
-import random
 from django.shortcuts import render, redirect
 from django.http import FileResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -25,7 +23,7 @@ def login(request) :
     if form.is_valid() :
         data = Employee.objects.filter(phone=request.POST['phone'])
         if data.count() <= 0 :
-            params['msg'] = '未登録の電話番号です'
+            params['msg'] = '未登録のドライバー電話番号です'
         elif data.first().password != request.POST['password'] :
             params['msg'] = 'パスワードが間違っています'
         else :
@@ -57,7 +55,7 @@ def main(request) :
             if files and files.count() > 0 :
                 params['files'] = files
             else :
-                params['msg'] = '該当するファイルがありません'
+                params['msg'] = '該当するPDFファイルがありません'
             params['form'] = form
         else :
             params['msg'] = '入力に誤りがあります'
@@ -68,7 +66,7 @@ def show_file(request) :
     phone = request.POST.get('phone')
     file = File.objects.filter(phone=phone)
     if not file or file.count() <= 0 :
-        return HttpResponse("ファイルが見つかりません")
+        return HttpResponse("PDFファイルが見つかりません")
     try :
         path = File.first().get_path()
         ext = os.path.splitext(path)[1][1:]
@@ -82,7 +80,7 @@ def show_file(request) :
             response['Content-Disposition'] = 'inline;filename="'+ f.name + '"'
             return response
     except FileNotFoundError :
-        return HttpResponse("ファイルが見つかりません")
+        return HttpResponse("PDFファイルが見つかりません")
 
 @csrf_exempt
 def change_password(request) :
@@ -126,14 +124,14 @@ def admin_login(request) :
     if 'msg' in request.session :
         params['msg'] = request.session['msg']
         del request.session['msg']
-    if (request.method != 'POST') :
+    if request.method != 'POST' :
         return render(request, 'login.html', params)
     obj = Employee()
     form = LoginForm(data=request.POST, instance=obj)
     if form.is_valid() :
         data = Employee.objects.filter(phone=request.POST['phone'])
         if data.count() <= 0 :
-            params['msg'] = '未登録の電話番号です'
+            params['msg'] = '未登録の管理者電話番号です'
         elif data.first().password != request.POST['password'] :
             params['msg'] = 'パスワードが間違っています'
         elif not data.first().auth :
@@ -208,7 +206,7 @@ def employee(request, id, edit) :
             return redirect('show_employees')
     else :
         if edit == 2 :
-            params['msg'] = 'この従業員を削除してよいですか？'
+            params['msg'] = '本当に削除しますか？'
         elif edit == 4 :
             target = Employee.objects.filter(id=id)
             target.delete()
@@ -229,31 +227,32 @@ def add_employee(request) :
     }
     if request.POST :
         form = AddEmployeeForm(data=request.POST)
-        password = request.session['password']
         if form.is_valid() :
             if not request.session['add_employee_confirm'] :
                 if Employee.objects.filter(phone=request.POST['phone']).count() > 0 :
-                    params['msg'] = '既に登録されている電話番号です'
+                    if request.POST['auth'] :
+                        params['msg'] = '既に登録されている管理者電話番号です'
+                    else :
+                        params['msg'] = '既に登録されているドライバー電話番号です'
                 else :
                     request.session['add_employee_confirm'] = True
                     params['msg'] = 'この内容で登録します、よろしいですか？'
                     data = request.POST.copy()
-                    data.update({'dummy':password})
+                    data.update({'dummy':request.POST['phone']})
                     form = AddEmployeeForm(data=data)
             else :
-                form.instance.password = password
+                form.instance.password = request.POST['phone']
                 form.instance.save()
-                del request.session['password']
                 del request.session['add_employee_confirm']
                 return redirect('show_employees')
         else :
             params['msg'] = '入力に誤りがあります'
         params['form'] = form
+        params['password'] = request.POST['phone']
     else :
-        request.session['password'] = make_password()
         request.session['add_employee_confirm'] = False
-        params['msg'] = '従業員を登録できます'
-    params['password'] = request.session['password']
+        params['msg'] = 'ドライバーもしくは管理者を登録できます'
+        params['password'] = ""
     return render(request, 'add_employee.html', params)
 
 @csrf_exempt
@@ -272,7 +271,7 @@ def add_file(request) :
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid() :
             if File.objects.filter(phone=request.POST['phone']).count() > 0 :
-                params['msg'] = '既に登録されている電話番号です'
+                params['msg'] = '既に登録されている納品先電話番号です'
             else :
                 form.save()
                 return redirect('show_files')
@@ -309,12 +308,3 @@ def get_employee(request, auth_flg) :
     if auth_flg and not employee.auth :
         return None
     return employee
-
-def make_password() :
-    ret = ''
-    while not re.match(r'[0-9]+', ret) :
-        l = list('0123456789abcdefghijklmnopqrstuvwxyz')
-        random.shuffle(l)
-        s = ''.join(l)
-        ret = s[0:7]
-    return ret
