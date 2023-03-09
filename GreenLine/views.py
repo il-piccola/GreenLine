@@ -118,7 +118,7 @@ def change_password(request) :
 @csrf_exempt
 def admin_login(request) :
     params = {
-        'title' : 'Administor Login',
+        'title' : 'Admin Login',
         'msg' : '',
         'form' : LoginForm(),
         'mode_admin' : True,
@@ -152,7 +152,7 @@ def admin_main(request) :
     if not employee :
         return redirect('admin_login')
     params = {
-        'title' : 'Administrator Main',
+        'title' : 'Admin Main',
         'msg' : '',
         'name' : employee.name,
         'organizaion' : employee.organization.name,
