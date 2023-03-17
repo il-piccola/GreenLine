@@ -125,6 +125,36 @@ USE_I18N = True
 
 USE_TZ = True
 
+LOG_BASE_DIR = os.path.join(BASE_DIR, 'log')
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {"simple": {"format": "%(asctime)s [%(levelname)s] %(message)s"}},
+    "handlers": {
+        "info": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(LOG_BASE_DIR, "info.log"),
+            "formatter": "simple",
+        },
+        "warning": {
+            "level": "WARNING",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(LOG_BASE_DIR, "warning.log"),
+            "formatter": "simple",
+        },
+        "error": {
+            "level": "ERROR",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(LOG_BASE_DIR, "error.log"),
+            "formatter": "simple",
+        },
+    },
+    "root": {
+        "handlers": ["info", "warning", "error"],
+        "level": "INFO",
+    },
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
