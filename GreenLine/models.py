@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from django.core.validators import RegexValidator
 from django.core.validators import FileExtensionValidator
@@ -19,8 +20,12 @@ class Employee(models.Model) :
     auth = models.BooleanField(default=False)
 
 def upload_path(instance, filename) :
-    return instance.phone + '_' + filename
+    base = os.path.splitext(os.path.basename(filename))[0]
+    ext = os.path.splitext(os.path.basename(filename))[1]
+    return instance.phone + '_' + base + '_' + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ext
 
 class File(models.Model) :
     phone = models.CharField(max_length=200, default='')
     file = models.FileField(upload_to=upload_path, validators=[FileExtensionValidator(['pdf'])])
+    def file_name(self) :
+        return os.path.basename(self.file.name)

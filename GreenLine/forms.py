@@ -48,5 +48,3 @@ class UploadForm(forms.ModelForm) :
     class Meta :
         model = File
         fields = ['phone', 'file']
-        def save() :
-            parent.save()

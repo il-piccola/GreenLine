@@ -270,11 +270,8 @@ def add_file(request) :
     if request.POST :
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid() :
-            if File.objects.filter(phone=request.POST['phone']).count() > 0 :
-                params['msg'] = '既に登録されている納品先電話番号です'
-            else :
-                form.save()
-                return redirect('show_files')
+            form.save()
+            return redirect('show_files')
         else :
             params['msg'] = '入力に誤りがあります'
     return render(request, 'add_file.html', params)
