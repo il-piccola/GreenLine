@@ -4,3 +4,4 @@ GreenLine/db.sqlite3
 GreenLine/media/*.pdf
 GreenLine/static/admin/
 GreenLine/log/*.log
+GreenLine/.vscode
