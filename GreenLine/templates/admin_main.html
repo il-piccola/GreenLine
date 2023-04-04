@@ -24,6 +24,8 @@
     </div>
     <p>{{ msg }}</p>
     <div id="main_menu" class="container mt-5">
+        <div class="row"><div class="col-4"></div><div class="col-8"><p class="fs-3 text"><a href="{% url 'show_organization' %}">部署一覧</a></p></div></div>
+        <div class="row"><div class="col-4"></div><div class="col-8"><p class="fs-3 text"><a href="{% url 'add_organization' %}">部署新規登録</a></p></div></div>
         <div class="row"><div class="col-4"></div><div class="col-8"><p class="fs-3 text"><a href="{% url 'show_employees' %}">従業員一覧</a></p></div></div>
         <div class="row"><div class="col-4"></div><div class="col-8"><p class="fs-3 text"><a href="{% url 'add_employee' %}">従業員新規登録</a></p></div></div>
         <div class="row"><div class="col-4"></div><div class="col-8"><p class="fs-3 text"><a href="{% url 'add_file' %}">PDFアップロード</a></p></div></div>

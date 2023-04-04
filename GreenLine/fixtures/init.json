@@ -3,14 +3,16 @@
         "model" : "GreenLine.Organization",
         "pk" : 1,
         "fields" : {
-            "name" : "システム管理室"
+            "name" : "システム管理室",
+            "kana" : "システムカンリシツ"
         }
     },
     {
         "model" : "GreenLine.Organization",
         "pk" : 2,
         "fields" : {
-            "name" : "営業部"
+            "name" : "営業部",
+            "kana" : "エイギョウブ"
         }
     },
     {

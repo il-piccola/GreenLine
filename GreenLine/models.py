@@ -6,7 +6,8 @@ from .settings import *
 
 # 部署マスタ
 class Organization(models.Model) :
-    name = models.CharField(max_length=200, default='')
+    name = models.CharField(max_length=512, default='')
+    kana = models.CharField(max_length=1024, default='')
     def __str__(self) :
         return self.name
 

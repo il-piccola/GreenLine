@@ -296,6 +296,52 @@ def del_file(request, id) :
         file.delete()
     return redirect('show_files')
 
+@csrf_exempt
+def show_organization(request) :
+    employee = get_employee(request, True)
+    if not employee :
+        return redirect('admin_login')
+    params = {
+        'title' : 'Organizations',
+        'msg' : '',
+        'name' : employee.name,
+        'organizaion' : employee.organization.name,
+        'list' : Organization.objects.all(),
+    }
+    return render(request, 'show_organization.html', params)
+
+@csrf_exempt
+def add_organization(request) :
+    employee = get_employee(request, True)
+    if not employee :
+        return redirect('admin_login')
+    params = {
+        'title' : 'New Organization',
+        'msg' : '',
+        'name' : employee.name,
+        'organizaion' : employee.organization.name,
+        'form' : OrganizationForm(),
+    }
+    if request.POST :
+        form = OrganizationForm(data=request.POST)
+        if form.is_valid() :
+            if not request.session['add_organization_confirm'] :
+                request.session['add_organization_confirm'] = True
+                params['disable'] = True
+                params['msg'] = 'この内容で登録します、よろしいですか？'
+            else :
+                form.instance.save()
+                del request.session['add_organization_confirm']
+                return redirect('show_organization')
+        else :
+            del params['disable']
+            params['msg'] = '入力に誤りがあります'
+        params['form'] = form
+    else :
+        request.session['add_organization_confirm'] = False
+        params['msg'] = '部署を登録できます'
+    return render(request, 'add_organization.html', params)
+
 def get_employee(request, auth_flg) :
     if not 'employee' in request.session :
         return None
