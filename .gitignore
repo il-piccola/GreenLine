@@ -1,7 +1,7 @@
 GreenLine/__pycache__/
 GreenLine/migrations/__pycache__/
-GreenLine/db.sqlite3
-GreenLine/media/*.pdf
-GreenLine/static/admin/
-GreenLine/log/*.log
-GreenLine/.vscode/
+db.sqlite3
+media/*.pdf
+static/admin/
+log/*.log
+.vscode/
