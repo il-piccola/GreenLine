@@ -66,6 +66,7 @@ class ShipperForm(forms.ModelForm) :
 class ConsigneeForm(forms.ModelForm) :
     name = forms.CharField(label="名称", widget=forms.TextInput(attrs={'class':'form-control'}))
     kana = forms.CharField(label="カナ", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[ァ-ヴー]+$'}))
+    prefecture = forms.ModelChoiceField(label="都道府県", queryset=Prefecture.objects.all(), widget=forms.Select(attrs={'class':'form-control'}))
     shipper = forms.ModelChoiceField(label="メーカー(荷主)", queryset=Shipper.objects.all(), widget=forms.Select(attrs={'class':'form-control'}))
     class Meta :
         model = Shipper
