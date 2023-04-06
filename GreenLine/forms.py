@@ -55,3 +55,18 @@ class OrganizationForm(forms.ModelForm) :
     class Meta :
         model = Organization
         fields = ['name', 'kana', ]
+
+class ShipperForm(forms.ModelForm) :
+    name = forms.CharField(label="名称", widget=forms.TextInput(attrs={'class':'form-control'}))
+    kana = forms.CharField(label="カナ", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[ァ-ヴー]+$'}))
+    class Meta :
+        model = Shipper
+        fields = ['name', 'kana', ]
+
+class ConsigneeForm(forms.ModelForm) :
+    name = forms.CharField(label="名称", widget=forms.TextInput(attrs={'class':'form-control'}))
+    kana = forms.CharField(label="カナ", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[ァ-ヴー]+$'}))
+    shipper = forms.ModelChoiceField(label="メーカー(荷主)", queryset=Shipper.objects.all(), widget=forms.Select(attrs={'class':'form-control'}))
+    class Meta :
+        model = Shipper
+        fields = ['name', 'kana', 'shipper', ]

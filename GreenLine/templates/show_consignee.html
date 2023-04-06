@@ -16,31 +16,38 @@
                 <div class="row"><div class="col text-end">氏名：{{ name }}</div></div>
                 <div class="row"><div class="col text-end">所属：{{ organizaion }}</div></div>
             </div>
-            <div class="col container">
+            <div class="col-2 container">
                 <div class="row"><div class="col text-end"><a href="{% url 'admin_login' %}">ログアウト</a></div></div>
                 <div class="row"><div class="col text-end"><a href="{% url 'admin_main' %}">戻る</a></div></div>
             </div>
             </div>
         </div>
-        </div>
     </div>
     <p>{{ msg }}</p>
-    <!-- <div id="add_employee" class="d-flex justify-content-center"> -->
-    {% csrf_token %}
-    <form action="{% url 'add_employee' %}" method="POST">
-    <div class="container" style="width: 80%;">
-        <div class="row"><div class="col-2 text-end">{{ form.organization.label_tag }}</div><div class="col-10">{{ form.organization }}{{ form.organization.errors }}</div></div>
-        <div class="row"><div class="col-2 text-end">{{ form.name.label_tag }}</div><div class="col-10">{{ form.name }}{{ form.name.errors }}</div></div>
-        <div class="row"><div class="col-2 text-end">{{ form.kana.label_tag }}</div><div class="col-10">{{ form.kana }}{{ form.kana.errors }}</div></div>
-        <div class="row"><div class="col-2 text-end">{{ form.phone.label_tag }}</div><div class="col-10">{{ form.phone }}{{ form.phone.errors }}</div></div>
-        <div class="row"><div class="col-2 text-end">{{ form.dummy.label_tag }}</div><div class="col-10">{{ form.dummy }}</div></div>
-        <div class="row"><div class="col-2 text-end">{{ form.auth.label_tag }}</div><div class="col-10">{{ form.auth }}{{ form.auth.errors }}</div></div>
-        <div class="row"><div class="col-2"></div><div class="col-10">
-            <input type="submit" value="確認" class="btn btn-primary mt-2">
-        </div></div>
+    <div id="shipper_list" class="container mt-5">
+        <table class=table>
+            <thead>
+                <tr>
+                    <th scope="col">名称</th>
+                    <th scope="col">カナ</th>
+                    <th scope="col">都道府県</th>
+                    <th scope="col">市区町村</th>
+                    <th scope="col">メーカー(荷主)</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for e in list %}
+                <tr>
+                    <td>{{ e.name }}</td>
+                    <td>{{ e.kana }}</td>
+                    <td>{{ e.city.prefecture }}</td>
+                    <td>{{ e.city }}</td>
+                    <td>{{ e.shipper }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
-    </form>
-    <!-- </div> -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
 </body>
 </html>

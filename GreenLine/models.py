@@ -26,6 +26,8 @@ class Employee(models.Model) :
 class Prefecture(models.Model) :
     name = models.CharField(max_length=8, default='')
     kana = models.CharField(max_length=16, default='')
+    def __str__(self) :
+        return self.name
 
 # 市区町村マスタ
 class City(models.Model) :
@@ -33,11 +35,15 @@ class City(models.Model) :
     code = models.CharField(max_length=5, default='')
     name = models.CharField(max_length=32, default='')
     kana = models.CharField(max_length=64, default='')
+    def __str__(self) :
+        return self.name
 
 # 荷主マスタ
 class Shipper(models.Model) :
     name = models.CharField(max_length=512, default='')
     kana = models.CharField(max_length=1024, default='')
+    def __str__(self) :
+        return self.name
 
 # 納品先マスタ
 class Consignee(models.Model) :
@@ -45,6 +51,8 @@ class Consignee(models.Model) :
     kana = models.CharField(max_length=1024, default='')
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     shipper = models.ManyToManyField(Shipper)
+    def __str__(self) :
+        return self.name
 
 def upload_path(instance, filename) :
     base = os.path.splitext(os.path.basename(filename))[0]

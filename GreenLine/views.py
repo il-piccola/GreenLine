@@ -327,7 +327,6 @@ def add_organization(request) :
         if form.is_valid() :
             if not request.session['add_organization_confirm'] :
                 request.session['add_organization_confirm'] = True
-                params['disable'] = True
                 params['msg'] = 'この内容で登録します、よろしいですか？'
             else :
                 form.instance.save()
@@ -341,6 +340,103 @@ def add_organization(request) :
         request.session['add_organization_confirm'] = False
         params['msg'] = '部署を登録できます'
     return render(request, 'add_organization.html', params)
+
+@csrf_exempt
+def show_shipper(request) :
+    employee = get_employee(request, True)
+    if not employee :
+        return redirect('admin_login')
+    params = {
+        'title' : 'Makers(Shippers)',
+        'msg' : '',
+        'name' : employee.name,
+        'organizaion' : employee.organization.name,
+        'list' : Shipper.objects.all(),
+    }
+    return render(request, 'show_shipper.html', params)
+
+@csrf_exempt
+def add_shipper(request) :
+    employee = get_employee(request, True)
+    if not employee :
+        return redirect('admin_login')
+    params = {
+        'title' : 'New Maker(Shipper)',
+        'msg' : '',
+        'name' : employee.name,
+        'organizaion' : employee.organization.name,
+        'form' : ShipperForm(),
+    }
+    if request.POST :
+        form = ShipperForm(data=request.POST)
+        if form.is_valid() :
+            if not request.session['add_sipper_confirm'] :
+                request.session['add_sipper_confirm'] = True
+                params['msg'] = 'この内容で登録します、よろしいですか？'
+            else :
+                form.instance.save()
+                del request.session['add_sipper_confirm']
+                return redirect('show_shipper')
+        else :
+            del params['disable']
+            params['msg'] = '入力に誤りがあります'
+        params['form'] = form
+    else :
+        request.session['add_sipper_confirm'] = False
+        params['msg'] = '部署を登録できます'
+    return render(request, 'add_shipper.html', params)
+
+@csrf_exempt
+def show_consignee(request) :
+    employee = get_employee(request, True)
+    if not employee :
+        return redirect('admin_login')
+    params = {
+        'title' : 'Makers(Shippers)',
+        'msg' : '',
+        'name' : employee.name,
+        'organizaion' : employee.organization.name,
+        'list' : Consignee.objects.all(),
+    }
+    return render(request, 'show_consignee.html', params)
+
+@csrf_exempt
+def add_consignee(request) :
+    employee = get_employee(request, True)
+    if not employee :
+        return redirect('admin_login')
+    params = {
+        'title' : 'New Maker(Shipper)',
+        'msg' : '',
+        'name' : employee.name,
+        'organizaion' : employee.organization.name,
+        'form' : ConsigneeForm(),
+    }
+    if request.POST :
+        form = ConsigneeForm(data=request.POST)
+        if form.is_valid() :
+            if not request.session['add_consignee_confirm'] :
+                request.session['add_consignee_confirm'] = True
+                params['msg'] = 'この内容で登録します、よろしいですか？'
+            else :
+                form.instance.save()
+                del request.session['add_consignee_confirm']
+                return redirect('show_consignee')
+        else :
+            prefecture = request.POST['prefecture']
+            if prefecture :
+                queryset = City.objects.filter(prefecture=prefecture)
+                form.fields['city'] = forms.ModelChoiceField(label="市区町村", queryset=queryset, widget=forms.Select(attrs={'class':'form-control'}))
+                params['prefecture'] = prefecture
+        params['form'] = form
+    else :
+        request.session['add_consignee_confirm'] = False
+        params['msg'] = '納品先を登録できます'
+    return render(request, 'add_consignee.html', params)
+
+@csrf_exempt
+def get_city(request) :
+    pass
 
 def get_employee(request, auth_flg) :
     if not 'employee' in request.session :
