@@ -1,7 +1,9 @@
 import os
+import json
 from django.shortcuts import render, redirect
-from django.http import FileResponse, HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core import serializers
 from .models import *
 from .forms import *
 
@@ -423,11 +425,7 @@ def add_consignee(request) :
                 del request.session['add_consignee_confirm']
                 return redirect('show_consignee')
         else :
-            prefecture = request.POST['prefecture']
-            if prefecture :
-                queryset = City.objects.filter(prefecture=prefecture)
-                form.fields['city'] = forms.ModelChoiceField(label="市区町村", queryset=queryset, widget=forms.Select(attrs={'class':'form-control'}))
-                params['prefecture'] = prefecture
+            params['msg'] = '入力に誤りがあります'
         params['form'] = form
     else :
         request.session['add_consignee_confirm'] = False
@@ -435,8 +433,9 @@ def add_consignee(request) :
     return render(request, 'add_consignee.html', params)
 
 @csrf_exempt
-def get_city(request) :
-    pass
+def get_cities(request, id) :
+    cities = serializers.serialize("json", City.objects.filter(prefecture=id), fields=('name'))
+    return JsonResponse(json.loads(cities))
 
 def get_employee(request, auth_flg) :
     if not 'employee' in request.session :

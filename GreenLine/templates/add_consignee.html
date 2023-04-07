@@ -32,7 +32,9 @@
         <div class="row"><div class="col-3 text-end">{{ form.name.label_tag }}</div><div class="col-9">{{ form.name }}{{ form.name.errors }}</div></div>
         <div class="row"><div class="col-3 text-end">{{ form.kana.label_tag }}</div><div class="col-9">{{ form.kana }}{{ form.kana.errors }}</div></div>
         <div class="row"><div class="col-3 text-end">{{ form.prefecture.label_tag }}</div><div class="col-9">{{ form.prefecture }}{{ form.prefecture.errors }}</div></div>
-        <div class="row"><div class="col-3 text-end">{{ form.city.label_tag }}</div><div class="col-9">{{ form.city }}{{ form.city.errors }}</div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.city.label_tag }}</div><div class="col-9" id="form_city">
+            <select class="form-control" disabled="disabled"><option>---------</option></select>
+        </div></div>
         <div class="row"><div class="col-3 text-end">{{ form.shipper.label_tag }}</div><div class="col-9">{{ form.shipper }}{{ form.shipper.errors }}</div></div>
         <div class="row"><div class="col-3"></div><div class="col-9">
             <input type="submit" value="確認" class="btn btn-primary mt-2">
