@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
+from django.db.models import Q
 from .models import *
 from .forms import *
 
@@ -385,7 +386,7 @@ def add_shipper(request) :
         params['form'] = form
     else :
         request.session['add_sipper_confirm'] = False
-        params['msg'] = '部署を登録できます'
+        params['msg'] = 'メーカー(荷主)を登録できます'
     return render(request, 'add_shipper.html', params)
 
 @csrf_exempt
@@ -412,30 +413,41 @@ def add_consignee(request) :
         'msg' : '',
         'name' : employee.name,
         'organizaion' : employee.organization.name,
-        'form' : ConsigneeForm(),
     }
     if request.POST :
         form = ConsigneeForm(data=request.POST)
+        print(request.POST["city"])
         if form.is_valid() :
             if not request.session['add_consignee_confirm'] :
                 request.session['add_consignee_confirm'] = True
                 params['msg'] = 'この内容で登録します、よろしいですか？'
+                params['form'] = form
             else :
                 form.instance.save()
                 del request.session['add_consignee_confirm']
                 return redirect('show_consignee')
         else :
+            errors = form.errors.as_data()
+            for field_name, field_errors in errors.items():
+                print(f"Field '{field_name}':")
+                for error in field_errors:
+                    print(f"- {error}")
             params['msg'] = '入力に誤りがあります'
-        params['form'] = form
+            params['form'] = form
     else :
         request.session['add_consignee_confirm'] = False
         params['msg'] = '納品先を登録できます'
+        params['form'] = ConsigneeForm()
     return render(request, 'add_consignee.html', params)
 
 @csrf_exempt
-def get_cities(request, id) :
-    cities = serializers.serialize("json", City.objects.filter(prefecture=id), fields=('name'))
-    return JsonResponse(json.loads(cities))
+def get_cities(request) :
+    prefecture_id = request.GET.get('prefecture_id')
+    cities = City.objects.filter(prefecture_id=prefecture_id).order_by('id')
+    city_list = []
+    for city in cities:
+        city_list.append({'id': city.id, 'name': city.name})
+    return JsonResponse({'cities': city_list})
 
 def get_employee(request, auth_flg) :
     if not 'employee' in request.session :
