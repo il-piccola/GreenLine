@@ -40,6 +40,6 @@ urlpatterns = [
     path('add_shipper', add_shipper, name="add_shipper"),
     path('show_consignee', show_consignee, name="show_consignee"),
     path('add_consignee', add_consignee, name="add_consignee"),
-    path('get_cities/<int:id>', get_cities, name="get_cities"),
+    path('get_cities', get_cities, name="get_cities"),
 ]
 urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)
