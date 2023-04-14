@@ -27,13 +27,29 @@
     <p>{{ msg }}</p>
     <!-- <div id="add_organization" class="d-flex justify-content-center"> -->
     {% csrf_token %}
-    <form action="{% url 'add_consignee' %}" method="POST">
+    <form id="add_consignee_form" action="{% url 'add_consignee' %}" method="POST">
     <div class="container" style="width: 80%;">
         <div class="row"><div class="col-3 text-end">{{ form.name.label_tag }}</div><div class="col-9">{{ form.name }}{{ form.name.errors }}</div></div>
         <div class="row"><div class="col-3 text-end">{{ form.kana.label_tag }}</div><div class="col-9">{{ form.kana }}{{ form.kana.errors }}</div></div>
-        <div class="row"><div class="col-3 text-end">{{ form.prefecture.label_tag }}</div><div class="col-9">{{ form.prefecture }}{{ form.prefecture.errors }}</div></div>
-        <div class="row"><div class="col-3 text-end">{{ form.city_select.label_tag }}</div><div class="col-9">{{ form.city }}{{ form.city_select }}{{ form.city_select.errors }}</div></div>
-        <div class="row"><div class="col-3 text-end">{{ form.shipper.label_tag }}</div><div class="col-9">{{ form.shipper }}{{ form.shipper.errors }}</div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.phone.label_tag }}</div><div class="col-9">{{ form.phone }}{{ form.phone.errors }}</div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.prefecture.label_tag }}</div><div class="col-9">{{ form.prefecture }}<!--{{ form.prefecture.errors }}--></div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.city_select.label_tag }}</div><div class="col-9">{{ form.city }}
+            <!-- {{ form.city_select }} -->
+            <select id="city_select" class="form-control city_select">
+                {% if city_list %}
+                    {% for city in city_list %}
+                        {% if city_selected %}
+                            {% if city.id == city_selected %}
+                                <option id="{{ city.id }}" selected>{{ city.name }}</option>
+                            {% else %}
+                                <option id="{{ city.id }}">{{ city.name }}</option>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </select>
+        <!--{{ form.city_select.errors }}--></div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.shipper.label_tag }}</div><div class="col-9">{{ form.shipper }}<!--{{ form.shipper.errors }}--></div></div>
         <div class="row"><div class="col-3"></div><div class="col-9">
             <input type="submit" value="確認" class="btn btn-primary mt-2">
         </div></div>
@@ -45,21 +61,24 @@
     <script>
         $(document).ready(function(){
             $('.prefecture').change(function(){
-            var selected_prefecture_id = $(this).val();
-            $.ajax({
-                url: "{% url 'get_cities' %}",
-                data: {
-                    'prefecture_id': selected_prefecture_id
-                },
-                dataType: 'json',
-                success: function (data) {
-                    var city_select = $('.city_select');
-                    city_select.empty();
-                    $.each(data.cities, function (i, city) {
-                        city_select.append($('<option></option>').val(city.id).html(city.name));
-                    });
-                }
+                var selected_prefecture_id = $(this).val();
+                $.ajax({
+                    url: "{% url 'get_cities' %}",
+                    data: {
+                        'prefecture_id': selected_prefecture_id
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        var city_select = $('.city_select');
+                        city_select.empty();
+                        $.each(data.cities, function (i, city) {
+                            city_select.append($('<option></option>').val(city.id).html(city.name));
+                        });
+                    }
+                });
             });
+            $('.city_select').change(function(){
+                $('.city').val($(this).val())
             });
         });
     </script>

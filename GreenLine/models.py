@@ -49,6 +49,7 @@ class Shipper(models.Model) :
 class Consignee(models.Model) :
     name = models.CharField(max_length=512, default='')
     kana = models.CharField(max_length=1024, default='')
+    phone = models.CharField(max_length=16, default='')
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     shipper = models.ManyToManyField(Shipper)
     def __str__(self) :

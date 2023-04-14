@@ -66,10 +66,10 @@ class ShipperForm(forms.ModelForm) :
 class ConsigneeForm(forms.ModelForm) :
     name = forms.CharField(label="名称", widget=forms.TextInput(attrs={'class':'form-control'}))
     kana = forms.CharField(label="カナ", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[ァ-ヴー]+$'}))
+    phone = forms.CharField(label="電話番号", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[0-9]+$'}))
     prefecture = forms.ModelChoiceField(label="都道府県", queryset=Prefecture.objects.all(), widget=forms.Select(attrs={'class':'form-control prefecture'}))
-    city = forms.IntegerField(widget=forms.HiddenInput())
-    city_select = forms.ChoiceField(label='市区町村', widget=forms.Select(attrs={'class':'form-control city_select'}))
-    shipper = forms.ModelChoiceField(label="メーカー(荷主)", queryset=Shipper.objects.all(), widget=forms.SelectMultiple(attrs={'class':'form-control'}))
+    city = forms.IntegerField(widget=forms.HiddenInput(attrs={'class':'city'}))
+    shipper = forms.ModelMultipleChoiceField(label="メーカー(荷主)", queryset=Shipper.objects.all(), widget=forms.SelectMultiple(attrs={'class':'form-control'}))
     class Meta :
-        model = Shipper
-        fields = ['name', 'kana', 'prefecture', 'city', 'shipper', ]
+        model = Consignee
+        fields = ['name', 'kana', 'phone', 'prefecture', 'shipper', ]

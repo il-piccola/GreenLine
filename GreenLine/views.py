@@ -395,7 +395,7 @@ def show_consignee(request) :
     if not employee :
         return redirect('admin_login')
     params = {
-        'title' : 'Makers(Shippers)',
+        'title' : 'Consignees',
         'msg' : '',
         'name' : employee.name,
         'organizaion' : employee.organization.name,
@@ -409,21 +409,25 @@ def add_consignee(request) :
     if not employee :
         return redirect('admin_login')
     params = {
-        'title' : 'New Maker(Shipper)',
+        'title' : 'New Consignee',
         'msg' : '',
         'name' : employee.name,
         'organizaion' : employee.organization.name,
     }
     if request.POST :
+        params['city_selected'] = int(request.POST["city"])
+        params['city_list'] = get_city_select(request.POST['prefecture'])
         form = ConsigneeForm(data=request.POST)
-        print(request.POST["city"])
         if form.is_valid() :
             if not request.session['add_consignee_confirm'] :
                 request.session['add_consignee_confirm'] = True
                 params['msg'] = 'この内容で登録します、よろしいですか？'
                 params['form'] = form
             else :
-                form.instance.save()
+                consignee = form.save(commit=False)
+                consignee.city = City.objects.filter(id=form.cleaned_data['city']).first()
+                consignee.save()
+                form.save_m2m()
                 del request.session['add_consignee_confirm']
                 return redirect('show_consignee')
         else :
@@ -443,11 +447,7 @@ def add_consignee(request) :
 @csrf_exempt
 def get_cities(request) :
     prefecture_id = request.GET.get('prefecture_id')
-    cities = City.objects.filter(prefecture_id=prefecture_id).order_by('id')
-    city_list = []
-    for city in cities:
-        city_list.append({'id': city.id, 'name': city.name})
-    return JsonResponse({'cities': city_list})
+    return JsonResponse({'cities': get_city_select(prefecture_id)})
 
 def get_employee(request, auth_flg) :
     if not 'employee' in request.session :
@@ -458,3 +458,10 @@ def get_employee(request, auth_flg) :
     if auth_flg and not employee.auth :
         return None
     return employee
+
+def get_city_select(prefecture_id) :
+    cities = City.objects.filter(prefecture_id=prefecture_id).order_by('id')
+    city_list = []
+    for city in cities:
+        city_list.append({'id': city.id, 'name': city.name})
+    return city_list
