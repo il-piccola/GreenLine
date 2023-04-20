@@ -35,7 +35,7 @@
             <tbody>
             {% for e in list %}
                 <tr>
-                    <td>{{ e.name }}</td>
+                    <td><a href="{% url 'organization' e.id 0 %}">{{ e.name }}</a></td>
                     <td>{{ e.kana }}</td>
                 </tr>
             {% endfor %}

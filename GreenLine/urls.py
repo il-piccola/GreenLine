@@ -36,10 +36,13 @@ urlpatterns = [
     path('del_file/<int:id>', del_file, name="del_file"),
     path('show_organization', show_organization, name="show_organization"),
     path('add_organization', add_organization, name="add_organization"),
+    path('organization/<int:id>/<int:edit>', organization, name="organization"),
     path('show_shipper', show_shipper, name="show_shipper"),
     path('add_shipper', add_shipper, name="add_shipper"),
+    path('shipper/<int:id>/<int:edit>', shipper, name="shipper"),
     path('show_consignee', show_consignee, name="show_consignee"),
     path('add_consignee', add_consignee, name="add_consignee"),
+    path('consignee/<int:id>/<int:edit>', consignee, name="consignee"),
     path('get_cities', get_cities, name="get_cities"),
 ]
 urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)

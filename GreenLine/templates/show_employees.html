@@ -32,7 +32,6 @@
                     <th scope="col">名前</th>
                     <th scope="col">カナ</th>
                     <th scope="col">所属</th>
-                    <th scope="col">パスワード</th>
                     <th scope="col">管理者権限</th>
                 </tr>
             </thead>
@@ -43,7 +42,6 @@
                     <td>{{ e.name }}</td>
                     <td>{{ e.kana }}</td>
                     <td>{{ e.organization.name }}</td>
-                    <td>{{ e.password }}</td>
                     <td>{% if e.auth %}管理者{% endif %}</td>
                 </tr>
             {% endfor %}

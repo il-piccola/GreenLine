@@ -176,7 +176,6 @@ def show_employees(request) :
 
 @csrf_exempt
 def employee(request, id, edit) :
-    print(id, edit)
     employee = get_employee(request, True)
     if not employee :
         return redirect('admin_login')
@@ -314,6 +313,44 @@ def show_organization(request) :
     return render(request, 'show_organization.html', params)
 
 @csrf_exempt
+def organization(request, id, edit) :
+    employee = get_employee(request, True)
+    if not employee :
+        return redirect('admin_login')
+    target = Organization.objects.filter(id=id).first()
+    params = {
+        'title' : 'Employee',
+        'msg' : '',
+        'name' : employee.name,
+        'organizaion' : employee.organization.name,
+        'id' : id,
+        'edit' : edit,
+        'form' : OrganizationForm(instance=target),
+        'employees' : Employee.objects.filter(organization=id).all()
+    }
+    if request.POST :
+        form = OrganizationForm(data=request.POST)
+        if edit == 1 :
+            if form.is_valid() :
+                params['msg'] = 'この内容で更新してよいですか？'
+                params['form'] = form
+            else :
+                params['msg'] = '入力に誤りがあります'
+        elif edit == 3 :
+            target.name = request.POST['name']
+            target.kana = request.POST['kana']
+            target.save()
+            return redirect('show_organization')
+    else :
+        if edit == 2 :
+            params['msg'] = '所属従業員のデータも同時に削除されますが、本当に削除しますか？'
+        elif edit == 4 :
+            target = Organization.objects.filter(id=id)
+            target.delete()
+            return redirect('show_organization')
+    return render(request, 'organization.html', params)
+
+@csrf_exempt
 def add_organization(request) :
     employee = get_employee(request, True)
     if not employee :
@@ -359,6 +396,44 @@ def show_shipper(request) :
     return render(request, 'show_shipper.html', params)
 
 @csrf_exempt
+def shipper(request, id, edit) :
+    employee = get_employee(request, True)
+    if not employee :
+        return redirect('admin_login')
+    target = Shipper.objects.filter(id=id).first()
+    params = {
+        'title' : 'Employee',
+        'msg' : '',
+        'name' : employee.name,
+        'organizaion' : employee.organization.name,
+        'id' : id,
+        'edit' : edit,
+        'form' : ShipperForm(instance=target),
+        'consignees' : Consignee.objects.filter(shipper=id).all()
+    }
+    if request.POST :
+        form = ShipperForm(data=request.POST)
+        if edit == 1 :
+            if form.is_valid() :
+                params['msg'] = 'この内容で更新してよいですか？'
+                params['form'] = form
+            else :
+                params['msg'] = '入力に誤りがあります'
+        elif edit == 3 :
+            target.name = request.POST['name']
+            target.kana = request.POST['kana']
+            target.save()
+            return redirect('show_shipper')
+    else :
+        if edit == 2 :
+            params['msg'] = '本当に削除しますか？'
+        elif edit == 4 :
+            target = Shipper.objects.filter(id=id)
+            target.delete()
+            return redirect('show_shipper')
+    return render(request, 'shipper.html', params)
+
+@csrf_exempt
 def add_shipper(request) :
     employee = get_employee(request, True)
     if not employee :
@@ -402,6 +477,55 @@ def show_consignee(request) :
         'list' : Consignee.objects.all(),
     }
     return render(request, 'show_consignee.html', params)
+
+@csrf_exempt
+def consignee(request, id, edit) :
+    print(id, edit)
+    employee = get_employee(request, True)
+    if not employee :
+        return redirect('admin_login')
+    target = Consignee.objects.filter(id=id).first()
+    print(target.city.id, target.city.prefecture.id)
+    form = ConsigneeForm(instance=target)
+    form.fields['prefecture'].initial = target.city.prefecture.id
+    params = {
+        'title' : 'Employee',
+        'msg' : '',
+        'name' : employee.name,
+        'organizaion' : employee.organization.name,
+        'id' : id,
+        'edit' : edit,
+        'form' : form,
+        'model' : target,
+        'city_selected' : target.city.id,
+        'city_list' : get_city_select(target.city.prefecture.id)
+    }
+    if request.POST :
+        params['city_selected'] = int(request.POST["city"])
+        params['city_list'] = get_city_select(request.POST['prefecture'])
+        form = ConsigneeForm(data=request.POST)
+        if edit == 1 :
+            if form.is_valid() :
+                params['msg'] = 'この内容で更新してよいですか？'
+                params['form'] = form
+            else :
+                params['msg'] = '入力に誤りがあります'
+        elif edit == 3 :
+            target.name = request.POST['name']
+            target.kana = request.POST['kana']
+            target.phone = request.POST['phone']
+            target.city = request.POST['city']
+            target.shipper = request.POST['shipper']
+            target.save()
+            return redirect('show_shipper')
+    else :
+        if edit == 2 :
+            params['msg'] = '本当に削除しますか？'
+        elif edit == 4 :
+            target = Consignee.objects.filter(id=id)
+            target.delete()
+            return redirect('show_consignee')
+    return render(request, 'consignee.html', params)
 
 @csrf_exempt
 def add_consignee(request) :
