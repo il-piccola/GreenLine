@@ -25,17 +25,16 @@
         </div>
     </div>
     <p>{{ msg }}</p>
-    <div id="consignee" class="d-flex justify-content-center">
     {% csrf_token %}
     <form action="{% url 'consignee' id edit %}" method="POST">
-    <table class="table">
-    {% if edit != 1 %}
-        <tr><td>{{ form.name.label_tag }}</td><td>{{ form.name.value }}</td></tr>
-        <tr><td>{{ form.kana.label_tag }}</td><td>{{ form.kana.value }}</td></tr>
-        <tr><td>{{ form.phone.label_tag }}</td><td>{{ form.phone.value }}</td></tr>
-        <tr><td>{{ form.prefecture.label_tag }}</td><td>{{ model.city.prefecture }}</td></tr>
-        <tr><td>{{ form.city.label_tag }}</td><td>{{ model.city }}</td></tr>
-        <tr><td>メーカー(荷主)一覧:</td><td>
+    <div id="consignee" class="container" style="width: 80%;">
+    {% if edit != 1 and edit != 5 %}
+        <div class="row"><div class="col-3 text-end">{{ form.name.label_tag }}</div><div class="col-9">{{ form.name.value }}</div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.kana.label_tag }}</div><div class="col-9">{{ form.kana.value }}</div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.phone.label_tag }}</div><div class="col-9">{{ form.phone.value }}</div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.prefecture.label_tag }}</div><div class="col-9">{{ model.city.prefecture }}</div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.city.label_tag }}</div><div class="col-9">{{ model.city }}</div></div>
+        <div class="row"><div class="col-3 text-end">メーカー(荷主)一覧:</div><div class="col-9">
             {% if model.shipper.count > 0 %}
                 {% for item in model.shipper.all %}
                     {{ item.name }}<br>
@@ -43,21 +42,21 @@
             {% else %}
                 なし
             {% endif %}
-        </td></tr>
-        <tr><td></td><td>
-            {% if edit < 2 %}
+        </div></div>
+        <div class="row"><div class="col-3 text-end"></div><div class="col-9">
+            {% if edit == 0 %}
                 <button class="btn btn-primary mt-2" onclick="onEdit(form)">編集</button>
                 <button class="btn btn-primary mt-2" onclick="onDelete(form)">削除</button>
             {% else %}
                 <button class="btn btn-primary mt-2" onclick="onDeleteExec(form)">実行</button>
             {% endif %}
-        </td></tr>
+        </div></div>
     {% else %}
-        <tr><td>{{ form.name.label_tag }}</td><td>{{ form.name }}{{ form.name.errors }}</td></tr>
-        <tr><td>{{ form.kana.label_tag }}</td><td>{{ form.kana }}{{ form.kana.errors }}</td></tr>
-        <tr><td>{{ form.phone.label_tag }}</td><td>{{ form.phone }}{{ form.phone.errors }}</td></tr>
-        <tr><td>{{ form.prefecture.label_tag }}</td><td>{{ form.prefecture }}</td></tr>
-        <tr><td>{{ form.city.label_tag }}</td><td>{{ form.city }}
+        <div class="row"><div class="col-3 text-end">{{ form.name.label_tag }}</div><div class="col-9">{{ form.name }}{{ form.name.errors }}</div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.kana.label_tag }}</div><div class="col-9">{{ form.kana }}{{ form.kana.errors }}</div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.phone.label_tag }}</div><div class="col-9">{{ form.phone }}{{ form.phone.errors }}</div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.prefecture.label_tag }}</div><div class="col-9">{{ form.prefecture }}</div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.city.label_tag }}</div><div class="col-9">{{ form.city }}
             <select id="city_select" class="form-control city_select">
                 {% if city_list %}
                     {% for city in city_list %}
@@ -70,19 +69,19 @@
                         {% endif %}
                     {% endfor %}
                 {% endif %}
-        </td></tr>
-        <tr><td>{{ form.shipper.label_tag }}</td><td>{{ form.shipper }}</td></tr>
-        <tr><td></td><td>
-            {% if edit < 2 %}
-                <button class="btn btn-primary mt-2" onclick="onEditExec(form)">実行</button>
+            </select>
+        </div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.shipper.label_tag }}</div><div class="col-9">{{ form.shipper }}</div></div>
+        <div class="row"><div class="col-3 text-end"></div><div class="col-9">
+            {% if edit == 1 %}
+                <button class="btn btn-primary mt-2" onclick="onEditConfirm(form)">確認</button>
             {% else %}
-                <button class="btn btn-primary mt-2" onclick="onDeleteExec(form)">実行</button>
+                <button class="btn btn-primary mt-2" onclick="onEditExec(form)">実行</button>
             {% endif %}
-        </td></tr>
+        </div></div>
     {% endif %}
-    </table>
-    </form>
     </div>
+    </form>
     <script>
         function onEdit(form) {
             form.action = "{% url 'consignee' id 1 %}"
@@ -98,6 +97,10 @@
         }
         function onDeleteExec(form) {
             form.action = "{% url 'consignee' id 4 %}"
+            form.submit()
+        }
+        function onEditConfirm(form) {
+            form.action = "{% url 'consignee' id 5 %}"
             form.submit()
         }
     </script>

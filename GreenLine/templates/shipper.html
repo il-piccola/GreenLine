@@ -25,14 +25,13 @@
         </div>
     </div>
     <p>{{ msg }}</p>
-    <div id="shipper" class="d-flex justify-content-center">
     {% csrf_token %}
     <form action="{% url 'shipper' id edit %}" method="POST">
-    <table class="table">
-    {% if edit != 1 %}
-        <tr><td>{{ form.name.label_tag }}</td><td>{{ form.name.value }}</td></tr>
-        <tr><td>{{ form.kana.label_tag }}</td><td>{{ form.kana.value }}</td></tr>
-        <tr><td>配送先一覧:</td><td>
+    <div id="shipper" class="container" style="width: 80%;">
+    {% if edit != 1 and edit != 5 %}
+        <div class="row"><div class="col-3 text-end">{{ form.name.label_tag }}</div><div class="col-9">{{ form.name.value }}</div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.kana.label_tag }}</div><div class="col-9">{{ form.kana.value }}</div></div>
+        <div class="row"><div class="col-3 text-end">納品先一覧:</div><div class="col-9">
             {% if consignees.count > 0 %}
                 {% for item in consignees %}
                     {{ item.name }}<br>
@@ -40,29 +39,28 @@
             {% else %}
                 なし
             {% endif %}
-        </td></tr>
-        <tr><td></td><td>
-            {% if edit < 2 %}
+        </div></div>
+        <div class="row"><div class="col-3 text-end"></div><div class="col-9">
+            {% if edit == 0 %}
                 <button class="btn btn-primary mt-2" onclick="onEdit(form)">編集</button>
                 <button class="btn btn-primary mt-2" onclick="onDelete(form)">削除</button>
             {% else %}
                 <button class="btn btn-primary mt-2" onclick="onDeleteExec(form)">実行</button>
             {% endif %}
-        </td></tr>
+        </div></div>
     {% else %}
-        <tr><td>{{ form.name.label_tag }}</td><td>{{ form.name }}{{ form.name.errors }}</td></tr>
-        <tr><td>{{ form.kana.label_tag }}</td><td>{{ form.kana }}{{ form.kana.errors }}</td></tr>
-        <tr><td></td><td>
-            {% if edit < 2 %}
-                <button class="btn btn-primary mt-2" onclick="onEditExec(form)">実行</button>
+        <div class="row"><div class="col-3 text-end">{{ form.name.label_tag }}</div><div class="col-9">{{ form.name }}{{ form.name.errors }}</div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.kana.label_tag }}</div><div class="col-9">{{ form.kana }}{{ form.kana.errors }}</div></div>
+        <div class="row"><div class="col-3 text-end"></div><div class="col-9">
+            {% if edit == 1 %}
+                <button class="btn btn-primary mt-2" onclick="onEditConfirm(form)">確認</button>
             {% else %}
-                <button class="btn btn-primary mt-2" onclick="onDeleteExec(form)">実行</button>
+                <button class="btn btn-primary mt-2" onclick="onEditExec(form)">実行</button>
             {% endif %}
-        </td></tr>
+        </div></div>
     {% endif %}
-    </table>
-    </form>
     </div>
+    </form>
     <script>
         function onEdit(form) {
             form.action = "{% url 'shipper' id 1 %}"
@@ -78,6 +76,10 @@
         }
         function onDeleteExec(form) {
             form.action = "{% url 'shipper' id 4 %}"
+            form.submit()
+        }
+        function onEditConfirm(form) {
+            form.action = "{% url 'shipper' id 5 %}"
             form.submit()
         }
     </script>

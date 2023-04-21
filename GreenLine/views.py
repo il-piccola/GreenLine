@@ -189,30 +189,30 @@ def employee(request, id, edit) :
         'edit' : edit,
         'form' : EmployeeForm(instance=target)
     }
-    if request.POST :
+    if edit == 2 :
+        params['msg'] = '本当に削除しますか？'
+    elif edit == 4 :
+        target = Shipper.objects.filter(id=id)
+        target.delete()
+        return redirect('show_shipper')
+    elif request.POST :
         form = EmployeeForm(data=request.POST)
-        if edit == 1 :
-            if form.is_valid() :
+        if form.is_valid() :
+            if edit == 5 :
                 params['msg'] = 'この内容で更新してよいですか？'
                 params['form'] = form
-            else :
-                params['msg'] = '入力に誤りがあります'
-        elif edit == 3 :
-            target.phone = request.POST['phone']
-            target.name = request.POST['name']
-            target.kana = request.POST['kana']
-            target.password = request.POST['password']
-            print(request.POST['organization'])
-            target.organization = Organization.objects.filter(id=request.POST['organization']).first()
-            target.save()
-            return redirect('show_employees')
-    else :
-        if edit == 2 :
-            params['msg'] = '本当に削除しますか？'
-        elif edit == 4 :
-            target = Employee.objects.filter(id=id)
-            target.delete()
-            return redirect('show_employees')
+            elif edit == 3 :
+                form.instance.id = id
+                form.save()
+                return redirect('show_employees')
+        else :
+            errors = form.errors.as_data()
+            for field_name, field_errors in errors.items():
+                print(f"Field '{field_name}':")
+                for error in field_errors:
+                    print(f"- {error}")
+            params['msg'] = '入力に誤りがあります'
+        params['form'] = form
     return render(request, 'employee.html', params)
 
 @csrf_exempt
@@ -411,26 +411,30 @@ def shipper(request, id, edit) :
         'form' : ShipperForm(instance=target),
         'consignees' : Consignee.objects.filter(shipper=id).all()
     }
-    if request.POST :
+    if edit == 2 :
+        params['msg'] = '本当に削除しますか？'
+    elif edit == 4 :
+        target = Shipper.objects.filter(id=id)
+        target.delete()
+        return redirect('show_shipper')
+    elif request.POST :
         form = ShipperForm(data=request.POST)
-        if edit == 1 :
-            if form.is_valid() :
+        if form.is_valid() :
+            if edit == 5 :
                 params['msg'] = 'この内容で更新してよいですか？'
                 params['form'] = form
-            else :
-                params['msg'] = '入力に誤りがあります'
-        elif edit == 3 :
-            target.name = request.POST['name']
-            target.kana = request.POST['kana']
-            target.save()
-            return redirect('show_shipper')
-    else :
-        if edit == 2 :
-            params['msg'] = '本当に削除しますか？'
-        elif edit == 4 :
-            target = Shipper.objects.filter(id=id)
-            target.delete()
-            return redirect('show_shipper')
+            elif edit == 3 :
+                form.instance.id = id
+                form.save()
+                return redirect('show_shipper')
+        else :
+            errors = form.errors.as_data()
+            for field_name, field_errors in errors.items():
+                print(f"Field '{field_name}':")
+                for error in field_errors:
+                    print(f"- {error}")
+            params['msg'] = '入力に誤りがあります'
+        params['form'] = form
     return render(request, 'shipper.html', params)
 
 @csrf_exempt
@@ -486,6 +490,7 @@ def consignee(request, id, edit) :
     target = Consignee.objects.filter(id=id).first()
     form = ConsigneeForm(instance=target)
     form.fields['prefecture'].initial = target.city.prefecture.id
+    form.fields['city'].initial = target.city.id
     params = {
         'title' : 'Consignee',
         'msg' : '',
@@ -500,32 +505,32 @@ def consignee(request, id, edit) :
     }
     if edit == 2 :
         params['msg'] = '本当に削除しますか？'
-        print(params)
     elif edit == 4 :
         target = Consignee.objects.filter(id=id)
         target.delete()
         return redirect('show_consignee')
     elif request.POST :
-        params['city_selected'] = int(request.POST["city"])
-        params['city_list'] = get_city_select(request.POST['prefecture'])
+        if request.POST['prefecture'] :
+            params['city_list'] = get_city_select(request.POST['prefecture'])
+        if request.POST["city"] :
+            params['city_selected'] = int(request.POST["city"])
         form = ConsigneeForm(data=request.POST)
-        if edit == 1 or edit == 3 :
-            if form.is_valid() :
-                if edit == 1 :
-                    params['msg'] = 'この内容で更新してよいですか？'
-                    params['form'] = form
-                else :
-                    form.instance.city = City.objects.filter(id=form.cleaned_data['city']).first()
-                    form.save()
-                    return redirect('show_consignee')
+        if form.is_valid() :
+            if edit == 5 :
+                params['msg'] = 'この内容で更新してよいですか？'
             else :
-                errors = form.errors.as_data()
-                for field_name, field_errors in errors.items():
-                    print(f"Field '{field_name}':")
-                    for error in field_errors:
-                        print(f"- {error}")
-                params['msg'] = '入力に誤りがあります'
-                params['form'] = form
+                form.instance.id = id
+                form.instance.city = City.objects.filter(id=form.cleaned_data['city']).first()
+                form.save()
+                return redirect('show_consignee')
+        else :
+            errors = form.errors.as_data()
+            for field_name, field_errors in errors.items():
+                print(f"Field '{field_name}':")
+                for error in field_errors:
+                    print(f"- {error}")
+            params['msg'] = '入力に誤りがあります'
+        params['form'] = form
     return render(request, 'consignee.html', params)
 
 @csrf_exempt
@@ -549,10 +554,8 @@ def add_consignee(request) :
                 params['msg'] = 'この内容で登録します、よろしいですか？'
                 params['form'] = form
             else :
-                consignee = form.save(commit=False)
-                consignee.city = City.objects.filter(id=form.cleaned_data['city']).first()
-                consignee.save()
-                form.save_m2m()
+                form.instance.city = City.objects.filter(id=form.cleaned_data['city']).first()
+                form.save()
                 del request.session['add_consignee_confirm']
                 return redirect('show_consignee')
         else :
