@@ -72,4 +72,4 @@ class ConsigneeForm(forms.ModelForm) :
     shipper = forms.ModelMultipleChoiceField(label="メーカー(荷主)", queryset=Shipper.objects.all(), widget=forms.SelectMultiple(attrs={'class':'form-control'}))
     class Meta :
         model = Consignee
-        fields = ['name', 'kana', 'phone', 'city', 'shipper', ]
+        fields = ['name', 'kana', 'phone', 'shipper', ]
