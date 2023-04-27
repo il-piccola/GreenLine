@@ -319,7 +319,7 @@ def organization(request, id, edit) :
         return redirect('admin_login')
     target = Organization.objects.filter(id=id).first()
     params = {
-        'title' : 'Employee',
+        'title' : 'Organization',
         'msg' : '',
         'name' : employee.name,
         'organizaion' : employee.organization.name,
@@ -402,7 +402,7 @@ def shipper(request, id, edit) :
         return redirect('admin_login')
     target = Shipper.objects.filter(id=id).first()
     params = {
-        'title' : 'Shipper',
+        'title' : 'Maker(Shipper)',
         'msg' : '',
         'name' : employee.name,
         'organizaion' : employee.organization.name,
