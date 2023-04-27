@@ -43,11 +43,13 @@ class AddEmployeeForm(forms.ModelForm) :
         return self.instance.organization.name
 
 class UploadForm(forms.ModelForm) :
-    phone = forms.CharField(label="納品先電話番号", widget=forms.TextInput(attrs={'class':'form-control', 'pattern':'^[0-9]+$'}))
+    prefecture = forms.ModelChoiceField(label="都道府県", queryset=Prefecture.objects.all(), widget=forms.Select(attrs={'class':'form-control prefecture'}))
+    city = forms.IntegerField(label="市区町村", widget=forms.HiddenInput(attrs={'class':'city'}))
+    consignee = forms.IntegerField(label="納品先", widget=forms.HiddenInput(attrs={'class':'consignee'}))
     file = forms.FileField(label="PDFファイル", widget=forms.FileInput(attrs={'class':'form-control'}))
     class Meta :
         model = File
-        fields = ['phone', 'file', ]
+        fields = ['consignee', 'file', ]
 
 class OrganizationForm(forms.ModelForm) :
     name = forms.CharField(label="名称", widget=forms.TextInput(attrs={'class':'form-control'}))

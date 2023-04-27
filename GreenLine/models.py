@@ -63,7 +63,6 @@ def upload_path(instance, filename) :
 # ファイルアップロードテーブル
 class File(models.Model) :
     consignee = models.ForeignKey(Consignee, on_delete=models.CASCADE, blank=True, null=True)
-    phone = models.CharField(max_length=16, default='')
     file = models.FileField(upload_to=upload_path, validators=[FileExtensionValidator(['pdf'])])
     def file_name(self) :
         return os.path.basename(self.file.name)

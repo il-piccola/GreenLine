@@ -272,6 +272,8 @@ def add_file(request) :
     if request.POST :
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid() :
+            consignee = Consignee.objects.filter(id=form.cleaned_data['consignee']).first()
+            form.instance.consignee = consignee
             form.save()
             return redirect('show_files')
         else :
@@ -593,3 +595,15 @@ def get_city_select(prefecture_id) :
     for city in cities:
         city_list.append({'id': city.id, 'name': city.name})
     return city_list
+
+def get_consignees(request) :
+    city_id = request.GET.get('city_id')
+    return JsonResponse({'consignees': get_consignee_select(city_id)})
+
+def get_consignee_select(city_id) :
+    print(city_id)
+    consignees = Consignee.objects.filter(city_id=city_id).order_by('id')
+    consignee_list = []
+    for consignee in consignees:
+        consignee_list.append({'id': consignee.id, 'name': consignee.name, 'phone': consignee.phone})
+    return consignee_list
