@@ -512,11 +512,12 @@ def consignee(request, id, edit) :
         target.delete()
         return redirect('show_consignee')
     elif request.POST :
-        if request.POST['prefecture'] :
-            params['city_list'] = get_city_select(request.POST['prefecture'])
-        if request.POST["city"] :
-            params['city_selected'] = int(request.POST["city"])
         form = ConsigneeForm(data=request.POST)
+        if request.POST['prefecture'] :
+            form.fields['prefecture'].initial = request.POST['prefecture']
+            params['city_list'] = get_city_select(request.POST['prefecture'])
+            if request.POST["city"] :
+                params['city_selected'] = int(request.POST["city"])
         if form.is_valid() :
             if edit == 5 :
                 params['msg'] = 'この内容で更新してよいですか？'
@@ -601,9 +602,15 @@ def get_consignees(request) :
     return JsonResponse({'consignees': get_consignee_select(city_id)})
 
 def get_consignee_select(city_id) :
-    print(city_id)
     consignees = Consignee.objects.filter(city_id=city_id).order_by('id')
     consignee_list = []
     for consignee in consignees:
         consignee_list.append({'id': consignee.id, 'name': consignee.name, 'phone': consignee.phone})
     return consignee_list
+
+def get_phone(request) :
+    consignee_id = request.GET.get('consignee_id')
+    print(consignee_id)
+    phone = Consignee.objects.filter(id=consignee_id).first().phone
+    return JsonResponse({'phone': phone})
+

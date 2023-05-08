@@ -49,7 +49,7 @@ class UploadForm(forms.ModelForm) :
     file = forms.FileField(label="PDFファイル", widget=forms.FileInput(attrs={'class':'form-control'}))
     class Meta :
         model = File
-        fields = ['consignee', 'file', ]
+        fields = ['file', ]
 
 class OrganizationForm(forms.ModelForm) :
     name = forms.CharField(label="名称", widget=forms.TextInput(attrs={'class':'form-control'}))

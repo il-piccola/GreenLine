@@ -58,6 +58,7 @@
                 {% endif %}
             </select>
         </div></div>
+        <div class="row"><div class="col-3 text-end">電話番号:</div><div id="phone" class="col-9 phone"></div></div>
         <div class="row"><div class="col-3 text-end">{{ form.file.label_tag }}</div><div class="col-9">{{ form.file }}{{ form.file.errors }}</div></div>
         <div class="row"><div class="col-3"></div><div class="col-9">
             <input type="submit" value="アップロード" class="btn btn-primary mt-2">
@@ -105,6 +106,20 @@
             });
             $('.consignee_select').change(function(){
                 $('.consignee').val($(this).val())
+                var selected_consignee_id = $(this).val();
+                var phone = $('.phone');
+                phone.html(selected_consignee_id)
+                $.ajax({
+                    url: "{% url 'get_phone' %}",
+                    data: {
+                        'consignee_id': selected_consignee_id
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        var phone = $('.phone');
+                        phone.html(data.phone);
+                    }
+                });
             });
         });
     </script>

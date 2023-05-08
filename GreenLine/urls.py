@@ -45,5 +45,6 @@ urlpatterns = [
     path('consignee/<int:id>/<int:edit>', consignee, name="consignee"),
     path('get_cities', get_cities, name="get_cities"),
     path('get_consignees', get_consignees, name="get_consignees"),
+    path('get_phone', get_phone, name="get_phone"),
 ]
 urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)
