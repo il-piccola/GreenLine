@@ -78,7 +78,7 @@
                 });
             });
             $('.city_select').change(function(){
-                $('.city').val($(this).val())
+                $('.city').val($('.city_select > option:selected').val())
             });
         });
     </script>

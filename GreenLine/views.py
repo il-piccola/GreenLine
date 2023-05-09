@@ -517,6 +517,7 @@ def consignee(request, id, edit) :
             form.fields['prefecture'].initial = request.POST['prefecture']
             params['city_list'] = get_city_select(request.POST['prefecture'])
             if request.POST["city"] :
+                form.fields['city'].initial = request.POST["city"]
                 params['city_selected'] = int(request.POST["city"])
         if form.is_valid() :
             if edit == 5 :
