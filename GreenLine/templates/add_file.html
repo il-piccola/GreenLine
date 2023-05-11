@@ -68,59 +68,77 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
-        $(document).ready(function(){
-            $('.prefecture').change(function(){
-                var selected_prefecture_id = $(this).val();
-                $.ajax({
-                    url: "{% url 'get_cities' %}",
-                    data: {
-                        'prefecture_id': selected_prefecture_id
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                        var city_select = $('.city_select');
-                        city_select.empty();
-                        $.each(data.cities, function (i, city) {
-                            city_select.append($('<option></option>').val(city.id).html(city.name));
-                        });
-                    }
-                });
+        function changePrefecture(eo) {
+            selected_prefecture_id = $('.prefecture > option:selected').val();
+            console.log(selected_prefecture_id);
+            if (!selected_prefecture_id) {
+                return;
+            }
+            $.ajax({
+                url: "{% url 'get_cities' %}",
+                data: {
+                    'prefecture_id': selected_prefecture_id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $('.consignee_select').empty();
+                    $('.consignee').empty();
+                    var city_select = $('.city_select');
+                    city_select.empty();
+                    $.each(data.cities, function (i, city) {
+                        city_select.append($('<option></option>').val(city.id).html(city.name));
+                    });
+                    city_select.val(data.cities[0].id).change();
+                }
             });
-            $('.city_select').change(function(){
-                $('.city').val($(this).val())
-                var selected_city_id = $(this).val();
-                $.ajax({
-                    url: "{% url 'get_consignees' %}",
-                    data: {
-                        'city_id': selected_city_id
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                        var consignee_select = $('.consignee_select');
-                        consignee_select.empty();
-                        $.each(data.consignees, function (i, consignee) {
-                            consignee_select.append($('<option></option>').val(consignee.id).html(consignee.name));
-                        });
+        }
+        function changeCity(eo) {
+            selected_city_id = $('.city_select > option:selected').val();
+            console.log(selected_city_id);
+            if (!selected_city_id) {
+                return;
+            }
+            $('.city').val(selected_city_id);
+            $.ajax({
+                url: "{% url 'get_consignees' %}",
+                data: {
+                    'city_id': selected_city_id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    var consignee_select = $('.consignee_select');
+                    consignee_select.empty();
+                    $.each(data.consignees, function (i, consignee) {
+                        consignee_select.append($('<option></option>').val(consignee.id).html(consignee.name));
+                    });
+                    if (data.consignees.length > 0) {
+                        consignee_select.val(data.consignees[0].id).change();
                     }
-                });
+                }
             });
-            $('.consignee_select').change(function(){
-                $('.consignee').val($(this).val())
-                var selected_consignee_id = $(this).val();
-                var phone = $('.phone');
-                phone.html(selected_consignee_id)
-                $.ajax({
-                    url: "{% url 'get_phone' %}",
-                    data: {
-                        'consignee_id': selected_consignee_id
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                        var phone = $('.phone');
-                        phone.html(data.phone);
-                    }
-                });
+        }
+        function changeConsignee(eo) {
+            selected_consignee_id = $('.consignee_select > option:selected').val();
+            console.log(selected_consignee_id);
+            if (!selected_consignee_id) {
+                return;
+            }
+            $('.consignee').val(selected_consignee_id);
+            $.ajax({
+                url: "{% url 'get_phone' %}",
+                data: {
+                    'consignee_id': selected_consignee_id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $('.phone').html(data.phone);
+                }
             });
+        }
+        $(document).ready(function() {
+            $('.prefecture').change(changePrefecture);
+            $('.city_select').change(changeCity);
+            $('.consignee_select').change(changeConsignee);
         });
     </script>
 </body>

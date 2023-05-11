@@ -56,9 +56,11 @@ class Consignee(models.Model) :
         return self.name
 
 def upload_path(instance, filename) :
+    phone = instance.consignee.phone
     base = os.path.splitext(os.path.basename(filename))[0]
+    time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     ext = os.path.splitext(os.path.basename(filename))[1]
-    return instance.phone + '_' + base + '_' + datetime.datetime.now().strftime('%Y%m%d%H%M%S') + ext
+    return phone + '_' + base + '_' + time + ext
 
 # ファイルアップロードテーブル
 class File(models.Model) :

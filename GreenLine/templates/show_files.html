@@ -37,12 +37,12 @@
             <tbody>
             {% for e in list %}
                 <tr>
-                    <td>{{ e.phone }}</td>
+                    <td>{{ e.consignee.phone }}</td>
                     <td>
                         <a href="{{ e.file.url }}" target="_blank" rel="noopener noreferrer">{{ e.file }}</a>
                     </td>
                     <td>
-                        <button class="btn btn-primary btn-sm" onclick="onDelete('{{ e.phone }}', '{% url 'del_file' e.id %}')">削除</button>
+                        <button class="btn btn-primary btn-sm" onclick="onDelete('{{ e.consignee.phone }}', '{{ e.id }}')">削除</button>
                     </td>
                 </tr>
             {% endfor %}
@@ -50,8 +50,10 @@
         </table>
     </div>
     <script>
-        function onDelete(phone, url) {
-            var ret = confirm("電話番号【" + phone + "】のPDFファイルを削除しますか？")
+        function onDelete(phone, id) {
+            console.log(phone + ":" + id)
+            var url = "{% url 'del_file' 123 %}".replace(/123/, id);
+            var ret = confirm("電話番号【" + phone + "】のPDFファイルを削除しますか？");
             if (ret) {
                 window.location.href = url
             }
