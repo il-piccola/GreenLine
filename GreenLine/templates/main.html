@@ -36,43 +36,13 @@
     </div>
     {% if files %}
     <div id="main_file" class="container" style="height: 65vh;">
-        <!-- <div class="row" style="height: 5%; padding-bottom: 10px;"> -->
-            <div class="row">
-                {% for f in files %}
-                <div class="col-12 h3 pt-3"><a href="{{ f.file.url }}" target="_blank" rel="noopener noreferrer">{{ f.file.name }}</a></div>
-                {% endfor %}
-            </div>
-        <!-- </div> -->
-        <!-- <div class="row" style="height: 95%;">
-            <div class="col-12 text-center" style="height: 100%;">
-                <div id="file" style="height: 100%;"></div>
-            </div>
-        </div> -->
+        <div class="row">
+            {% for f in files %}
+            <div class="col-12 h3 pt-3"><a href="{{ f.file.url }}" target="_blank" rel="noopener noreferrer">{{ f.file.name }}</a></div>
+            {% endfor %}
+        </div>
     </div>
     {% endif %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
-    <!--
-    <script>
-        const showFile = async(phone) => {
-            const spinnerHTML = '<div class="spinner-border text-primary" style="width: 500px; height: 500px;" role="status"><span class="visually-hidden">Loading...</span></div>';
-            let tag = '#file'
-            document.querySelector(tag).innerHTML = spinnerHTML;
-            let body = new URLSearchParams();
-            body.append('phone', phone);
-            try {
-                let response = await fetch("{% url 'show_file' %}", {method: 'POST', body: body});
-                let blobResponse = await response.blob();
-                if (response.ok) {
-                    let fileUrl = URL.createObjectURL(blobResponse);
-                    document.querySelector(tag).innerHTML = `<iframe src='${fileUrl}#toolbar=0&page=1&view=FitV' width='100%' height='100%'></iframe>`;
-                } else {
-                    document.querySelector(tag).innerHTML = `response status = '${response.status}' '${response.statusText}'`;
-                }
-            } catch(e) {
-                document.querySelector(tag).innerHTML = `error = '${e.message}'`;
-            }
-        }
-    </script>
-    -->
 </body>
 </html>

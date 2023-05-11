@@ -54,7 +54,8 @@ def main(request) :
     else :
         form = MainForm(data=request.POST)
         if form.is_valid() :
-            files = File.objects.filter(phone__contains=request.POST['phone'])
+            consignees = Consignee.objects.filter(phone__contains=form.cleaned_data['phone'])
+            files = File.objects.filter(consignee__in=consignees)
             if files and files.count() > 0 :
                 params['files'] = files
             else :
