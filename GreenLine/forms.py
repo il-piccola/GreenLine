@@ -9,8 +9,12 @@ class LoginForm(forms.ModelForm) :
         model = Employee
         fields = ['phone', 'password', ]
 
-class MainForm(forms.Form) :
-    phone = forms.CharField(label="納品先電話番号", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'01234567890', 'pattern':'^[0-9]+$'}))
+class MainForm(forms.ModelForm) :
+    shipper = forms.IntegerField(label="メーカー(荷主)", widget=forms.HiddenInput(attrs={'class':'shipper'}))
+    consignee = forms.IntegerField(label="納品先", widget=forms.HiddenInput(attrs={'class':'consignee'}))
+    class Meta :
+        model = Consignee
+        fields = ['shipper', ]
 
 class PasswordForm(forms.Form) :
     new = forms.CharField(label="新パスワード", widget=forms.PasswordInput(attrs={'class':'form-control'}))

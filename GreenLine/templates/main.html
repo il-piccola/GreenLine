@@ -27,11 +27,31 @@
     <div id="main_form" class="container" style="height: 7vh; padding-bottom: 10px;">
         {% csrf_token %}
         <form action="{% url 'main' %}" method="POST">
-            <div class="row row-cols-auto">
-                <div class="col align-middle">{{ form.phone.label_tag }}</div>
-                <div class="col align-middle" style="width: 200px;">{{ form.phone }}</div>
-                <div class="col align-middle"><button class="btn btn-primary mt-2" type="submit">検索</button></div>
-            </div>
+            <div class="row"><div class="col-3 text-end">{{ form.shipper.label_tag }}</div><div id="phone" class="col-9 shipper">{{ form.shipper }}
+                <select class="form-control shipper_select">
+                    {% for shipper in shipper_list %}
+                        {% if shipper.id == shipper_selected %}
+                            <option id="{{ shipper.id }}" selected>{{ shipper.name }}</option>
+                        {% else %}
+                            <option id="{{ shipper.id }}">{{ shipper.name }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div></div>
+            <div class="row"><div class="col-3 text-end">{{ form.consignee.label_tag }}</div><div class="col-9">{{ form.consignee }}
+                <select class="form-control consignee_select">
+                    {% for consignee in consignee_list %}
+                        {% if consignee.id == consignee_selected %}
+                            <option id="{{ consignee.id }}" selected>{{ consignee.name }}</option>
+                        {% else %}
+                            <option id="{{ consignee.id }}">{{ consignee.name }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div></div>
+                <div class="row"><div class="col-3"></div><div class="col-9">
+                <input type="submit" value="検索" class="btn btn-primary mt-2">
+            </div></div>
         </form>
     </div>
     {% if files %}
@@ -44,5 +64,45 @@
     </div>
     {% endif %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        function changeShipper(eo) {
+            console.log($('.shipper_select > option:selected'));
+            selected_shipper_id = $('.shipper_select > option:selected').val();
+            if (!selected_shipper_id) {
+                return;
+            }
+            $('.shipper').val(selected_shipper_id);
+            $.ajax({
+                url: "{% url 'get_consignees_from_shipper' %}",
+                data: {
+                    'shipper_id': selected_shipper_id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data.consignees);
+                    var consignee_select = $('.consignee_select');
+                    consignee_select.empty();
+                    $.each(data.consignees, function (i, consignee) {
+                        consignee_select.append($('<option></option>').val(consignee.id).html(consignee.name));
+                    });
+                    if (data.consignees.length > 0) {
+                        consignee_select.val(data.consignees[0].id).change();
+                    }
+                }
+            });
+        }
+        function changeConsignee(eo) {
+            selected_consignee_id = $('.consignee_select > option:selected').val();
+            if (!selected_consignee_id) {
+                return;
+            }
+            $('.consignee').val(selected_consignee_id);
+        }
+        $(document).ready(function() {
+            $('.shipper_select').change(changeShipper);
+            $('.consignee_select').change(changeConsignee);
+        });
+    </script>
 </body>
 </html>

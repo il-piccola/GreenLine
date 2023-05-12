@@ -47,7 +47,9 @@ def main(request) :
         'name' : employee.name,
         'organizaion' : employee.organization.name,
         'form' : MainForm(),
+        'shipper_list' : Shipper.objects.all(),
     }
+    print(params['shipper_list'])
     if (request.method != 'POST') :
         return render(request, 'main.html', params)
     else :
@@ -454,19 +456,19 @@ def add_shipper(request) :
     if request.POST :
         form = ShipperForm(data=request.POST)
         if form.is_valid() :
-            if not request.session['add_sipper_confirm'] :
-                request.session['add_sipper_confirm'] = True
+            if not request.session['add_shipper_confirm'] :
+                request.session['add_shipper_confirm'] = True
                 params['msg'] = 'この内容で登録します、よろしいですか？'
             else :
                 form.instance.save()
-                del request.session['add_sipper_confirm']
+                del request.session['add_shipper_confirm']
                 return redirect('show_shipper')
         else :
             del params['disable']
             params['msg'] = '入力に誤りがあります'
         params['form'] = form
     else :
-        request.session['add_sipper_confirm'] = False
+        request.session['add_shipper_confirm'] = False
         params['msg'] = 'メーカー(荷主)を登録できます'
     return render(request, 'add_shipper.html', params)
 
@@ -606,8 +608,16 @@ def get_consignee_select(city_id) :
     consignees = Consignee.objects.filter(city_id=city_id).order_by('id')
     consignee_list = []
     for consignee in consignees:
-        consignee_list.append({'id': consignee.id, 'name': consignee.name, 'phone': consignee.phone})
+        consignee_list.append({'id': consignee.id, 'name': consignee.name})
     return consignee_list
+
+def get_consignees_from_shipper(request) :
+    shipper_id = request.GET.get('shipper_id')
+    consignees = Consignee.objects.filter(shipper_id=shipper_id).order_by('id')
+    consignee_list = []
+    for consignee in consignees:
+        consignee_list.append({'id': consignee.id, 'name': consignee.name})
+    return JsonResponse({'consignees': consignee_list})
 
 def get_phone(request) :
     consignee_id = request.GET.get('consignee_id')
