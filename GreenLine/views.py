@@ -54,16 +54,21 @@ def main(request) :
         return render(request, 'main.html', params)
     else :
         form = MainForm(data=request.POST)
-        if form.is_valid() :
-            consignees = Consignee.objects.filter(phone__contains=form.cleaned_data['phone'])
-            files = File.objects.filter(consignee__in=consignees)
-            if files and files.count() > 0 :
-                params['files'] = files
-            else :
-                params['msg'] = '該当するPDFファイルがありません'
-            params['form'] = form
+        consignees = Consignee.objects.all()
+        if request.POST["radio"] == "name" :
+            consignees = consignees.filter(name_contains=request.POST["name"])
+            if consignees.count() <= 0 :
+                consignees = consignees.filter(name_contains=request.POST["kana"])
+        elif request.POST["radio"] == "phone" :
+            consignees = Consignee.objects.filter(phone__contains=request.POST['phone'])
+        elif request.POST["radio"] == "city" :
+            consignees = consignees.filter(id=request.POST['consignee'])
+        files = File.objects.filter(consignee__in=consignees)
+        if files and files.count() > 0 :
+            params['files'] = files
         else :
-            params['msg'] = '入力に誤りがあります'
+            params['msg'] = '該当するPDFファイルがありません'
+        params['form'] = form
     return render(request, 'main.html', params)
 
 @csrf_exempt
