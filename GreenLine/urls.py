@@ -47,5 +47,7 @@ urlpatterns = [
     path('get_consignees', get_consignees, name="get_consignees"),
     path('get_consignees_from_shipper', get_consignees_from_shipper, name="get_consignees_from_shipper"),
     path('get_phone', get_phone, name="get_phone"),
+    path('get_prefectures_from_shipper', get_prefectures_from_shipper, name="get_prefectures_from_shipper"),
+    path('get_cities_from_shipper', get_cities_from_shipper, name="get_cities_from_shipper"),
 ]
 urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)

@@ -27,18 +27,61 @@
     <div id="main_form" class="container" style="height: 7vh; padding-bottom: 10px;">
         {% csrf_token %}
         <form action="{% url 'main' %}" method="POST">
-            <div class="row"><div class="col-3 text-end">{{ form.shipper.label_tag }}</div><div id="phone" class="col-9 shipper">{{ form.shipper }}
-                <select class="form-control shipper_select">
-                    {% for shipper in shipper_list %}
-                        {% if shipper.id == shipper_selected %}
-                            <option id="{{ shipper.id }}" selected>{{ shipper.name }}</option>
-                        {% else %}
-                            <option id="{{ shipper.id }}">{{ shipper.name }}</option>
+            <div class="row"><div class="col-3 text-end">{{ form.shipper.label_tag }}</div><div class="col-9">{{ form.shipper }}</div></div>
+            <!-- <div class="row"><div class="col-3 text-end">{{ form.radio.label_tag }}</div><div class="col-9">
+                {% for c in form.radio %}
+                    {{ c.tag }}<label class="form-check-label">{{ c.choice_label }}</label>
+                {% endfor %}
+            </div></div> -->
+            <div class="row row_name">
+                <div class="col-3 text-end">
+                    {{ form.radio.0.tag }}<label class="form-check-label">{{ form.radio.0.choice_label }}</label>
+                </div><div class="col-9">
+                    {{ form.name }}
+                </div>
+            </div>
+            <div class="row row_phone">
+                <div class="col-3 text-end">
+                    {{ form.radio.1.tag }}<label class="form-check-label">{{ form.radio.1.choice_label }}</label>
+                </div><div class="col-9">
+                    {{ form.phone }}
+                </div>
+            </div>
+            <div class="row row_prefecture">
+                <div class="col-3 text-end">
+                    {{ form.radio.2.tag }}<label class="form-check-label">{{ form.radio.2.choice_label }}</label>
+                </div><div class="col-9">{{ form.prefecture }}
+                    <select id="prefecture_select" class="form-control prefecture_select">
+                        {% if prefecture_list %}
+                            {% for prefecture in prefecture_list %}
+                                {% if prefecture_selected %}
+                                    {% if prefecture.id == prefecture_selected %}
+                                        <option id="{{ prefecture.id }}" selected>{{ prefecture.name }}</option>
+                                    {% else %}
+                                        <option id="{{ prefecture.id }}">{{ prefecture.name }}</option>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
                         {% endif %}
-                    {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row row_city"><div class="col-3 text-end"></div><div class="col-9">{{ form.city }}
+                <select id="city_select" class="form-control city_select">
+                    {% if city_list %}
+                        {% for city in city_list %}
+                            {% if city_selected %}
+                                {% if city.id == city_selected %}
+                                    <option id="{{ city.id }}" selected>{{ city.name }}</option>
+                                {% else %}
+                                    <option id="{{ city.id }}">{{ city.name }}</option>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
                 </select>
             </div></div>
-            <div class="row"><div class="col-3 text-end">{{ form.consignee.label_tag }}</div><div class="col-9">{{ form.consignee }}
+            <div class="row row_consignee"><div class="col-3 text-end">{{ form.consignee.label_tag }}</div><div class="col-9">{{ form.consignee }}
                 <select class="form-control consignee_select">
                     {% for consignee in consignee_list %}
                         {% if consignee.id == consignee_selected %}
@@ -49,8 +92,8 @@
                     {% endfor %}
                 </select>
             </div></div>
-                <div class="row"><div class="col-3"></div><div class="col-9">
-                <input type="submit" value="検索" class="btn btn-primary mt-2">
+            <div class="row"><div class="col-3"></div><div class="col-9">
+                <input type="submit" value="検索" class="btn btn-primary mt-2 submit">
             </div></div>
         </form>
     </div>
@@ -67,20 +110,101 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
         function changeShipper(eo) {
-            console.log($('.shipper_select > option:selected'));
-            selected_shipper_id = $('.shipper_select > option:selected').val();
+            selected_shipper_id = $('.shipper > option:selected').val();
+            $('.radio').prop('disabled', !(selected_shipper_id));
+            $('.radio').prop('checked', false).change();
             if (!selected_shipper_id) {
+                $('.prefecture_select').val(0).change();
                 return;
             }
-            $('.shipper').val(selected_shipper_id);
+            selected_shipper_id = $('.shipper > option:selected').val();
             $.ajax({
-                url: "{% url 'get_consignees_from_shipper' %}",
+                url: "{% url 'get_prefectures_from_shipper' %}",
                 data: {
                     'shipper_id': selected_shipper_id
                 },
                 dataType: 'json',
                 success: function (data) {
-                    console.log(data.consignees);
+                    $('.prefecture').val('');
+                    var prefecture_select = $('.prefecture_select');
+                    prefecture_select.empty();
+                    $.each(data.prefectures, function (i, prefecture) {
+                        prefecture_select.append($('<option></option>').val(prefecture.id).html(prefecture.name));
+                    });
+                    $('.city').val('');
+                    $('.city_select').empty();
+                }
+            });
+        }
+        function changeRadio(eo) {
+            checked_radio_val = $('.radio:checked').val();
+            if (!checked_radio_val) {
+                $('.name').val('');
+                $('.phone').val('');
+                $('.prefecture_select').val(0).change();
+                $('.prefecture').val('');
+                $('.consignee_select').prop('disabled', true);
+            } else if (checked_radio_val === 'name') {
+                $('.name').prop('disabled', false);
+                $('.phone').prop('disabled', true);
+                $('.prefecture_select').prop('disabled', true);
+                $('.city_select').prop('disabled', true);
+                $('.consignee_select').prop('disabled', true);
+            } else if (checked_radio_val === 'phone') {
+                $('.name').prop('disabled', true);
+                $('.phone').prop('disabled', false);
+                $('.prefecture_select').prop('disabled', true);
+                $('.city_select').prop('disabled', true);
+                $('.consignee_select').prop('disabled', true);
+            } else if (checked_radio_val === 'city') {
+                $('.name').prop('disabled', true);
+                $('.phone').prop('disabled', true);
+                $('.prefecture_select').prop('disabled', false);
+                $('.city_select').prop('disabled', false);
+                $('.consignee_select').prop('disabled', false);
+            }
+            $('.submit').prop('disabled', (!checked_radio_val));
+        }
+        function changePrefecture(eo) {
+            selected_prefecture_id = $('.prefecture_select > option:selected').val();
+            console.log(selected_prefecture_id);
+            if (!selected_prefecture_id) {
+                return;
+            }
+            $('.prefecture').val(selected_prefecture_id);
+            $.ajax({
+                url: "{% url 'get_cities_from_shipper' %}",
+                data: {
+                    'shipper_id': $('.shipper > option:selected').val(),
+                    'prefecture_id': selected_prefecture_id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    var city_select = $('.city_select');
+                    city_select.empty();
+                    $.each(data.cities, function (i, city) {
+                        city_select.append($('<option></option>').val(city.id).html(city.name));
+                    });
+                    $('.consignee').val('');
+                    $('.consignee_select').empty();
+                    city_select.val(data.cities[0].id).change();
+                }
+            });
+        }
+        function changeCity(eo) {
+            selected_city_id = $('.city_select > option:selected').val();
+            console.log(selected_city_id);
+            if (!selected_city_id) {
+                return;
+            }
+            $('.city').val(selected_city_id);
+            $.ajax({
+                url: "{% url 'get_consignees' %}",
+                data: {
+                    'city_id': selected_city_id
+                },
+                dataType: 'json',
+                success: function (data) {
                     var consignee_select = $('.consignee_select');
                     consignee_select.empty();
                     $.each(data.consignees, function (i, consignee) {
@@ -100,8 +224,18 @@
             $('.consignee').val(selected_consignee_id);
         }
         $(document).ready(function() {
-            $('.shipper_select').change(changeShipper);
+            $('.shipper').change(changeShipper);
+            $('.radio').change(changeRadio);
+            $('.prefecture_select').change(changePrefecture);
+            $('.city_select').change(changeCity);
             $('.consignee_select').change(changeConsignee);
+            $('.submit').prop('disabled', true);
+            $('.radio').prop('disabled', true);
+            $('.name').prop('disabled', true);
+            $('.phone').prop('disabled', true);
+            $('.prefecture_select').prop('disabled', true);
+            $('.city_select').prop('disabled', true);
+            $('.consignee_select').prop('disabled', true);
         });
     </script>
 </body>

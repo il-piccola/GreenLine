@@ -9,12 +9,18 @@ class LoginForm(forms.ModelForm) :
         model = Employee
         fields = ['phone', 'password', ]
 
-class MainForm(forms.ModelForm) :
-    shipper = forms.IntegerField(label="メーカー(荷主)", widget=forms.HiddenInput(attrs={'class':'shipper'}))
+class MainForm(forms.Form) :
+    class SearchChoices(models.TextChoices) :
+        name = 'name', '納品先名'
+        phone = 'phone', '電話番号'
+        city = 'city', '市区町村'
+    shipper = forms.ModelChoiceField(label="メーカー(荷主)", queryset=Shipper.objects.all(), widget=forms.Select(attrs={'class':'form-select shipper'}))
+    radio = forms.ChoiceField(label='', choices=SearchChoices.choices, required=True, widget=forms.widgets.RadioSelect(attrs={'class':'form-check-input radio'}))
+    name = forms.CharField(label='納品先名', widget=forms.TextInput(attrs={'class':'form-control name'}))
+    phone = forms.CharField(label='電話番号', widget=forms.TextInput(attrs={'class':'form-control phone'}))
+    prefecture = forms.IntegerField(label="都道府県", widget=forms.HiddenInput(attrs={'class':'prefecture'}))
+    city = forms.IntegerField(label="市区町村", widget=forms.HiddenInput(attrs={'class':'city'}))
     consignee = forms.IntegerField(label="納品先", widget=forms.HiddenInput(attrs={'class':'consignee'}))
-    class Meta :
-        model = Consignee
-        fields = ['shipper', ]
 
 class PasswordForm(forms.Form) :
     new = forms.CharField(label="新パスワード", widget=forms.PasswordInput(attrs={'class':'form-control'}))

@@ -598,8 +598,10 @@ def get_city_select(prefecture_id) :
     city_list = []
     for city in cities:
         city_list.append({'id': city.id, 'name': city.name})
+    print(city_list)
     return city_list
 
+@csrf_exempt
 def get_consignees(request) :
     city_id = request.GET.get('city_id')
     return JsonResponse({'consignees': get_consignee_select(city_id)})
@@ -607,21 +609,44 @@ def get_consignees(request) :
 def get_consignee_select(city_id) :
     consignees = Consignee.objects.filter(city_id=city_id).order_by('id')
     consignee_list = []
-    for consignee in consignees:
+    for consignee in consignees :
         consignee_list.append({'id': consignee.id, 'name': consignee.name})
     return consignee_list
 
+@csrf_exempt
 def get_consignees_from_shipper(request) :
     shipper_id = request.GET.get('shipper_id')
     consignees = Consignee.objects.filter(shipper_id=shipper_id).order_by('id')
     consignee_list = []
-    for consignee in consignees:
+    for consignee in consignees :
         consignee_list.append({'id': consignee.id, 'name': consignee.name})
     return JsonResponse({'consignees': consignee_list})
 
+@csrf_exempt
 def get_phone(request) :
     consignee_id = request.GET.get('consignee_id')
-    print(consignee_id)
     phone = Consignee.objects.filter(id=consignee_id).first().phone
     return JsonResponse({'phone': phone})
 
+@csrf_exempt
+def get_prefectures_from_shipper(request) :
+    shipper_id = request.GET.get('shipper_id')
+    consignees = Consignee.objects.filter(shipper=shipper_id).order_by('id')
+    cities = City.objects.filter(id__in=consignees.values_list('city', flat=True))
+    prefectures = Prefecture.objects.filter(id__in=cities.values_list('prefecture', flat=True))
+    prefecture_list = [{'id': 0, 'name': '---------'}]
+    for prefecture in prefectures :
+        prefecture_list.append({'id': prefecture.id, 'name': prefecture.name})
+    return JsonResponse({'prefectures': prefecture_list})
+
+@csrf_exempt
+def get_cities_from_shipper(request) :
+    shipper_id = request.GET.get('shipper_id')
+    prefecture_id = request.GET.get('prefecture_id')
+    cities = City.objects.filter(prefecture_id=prefecture_id).order_by('id')
+    consignees = Consignee.objects.filter(shipper=shipper_id, city__in=cities).order_by('id')
+    cities = City.objects.filter(id__in=consignees.values_list('city', flat=True))
+    city_list = [{'id': 0, 'name': '---------'}]
+    for city in cities :
+        city_list.append({'id': city.id, 'name': city.name})
+    return JsonResponse({'cities': city_list})
