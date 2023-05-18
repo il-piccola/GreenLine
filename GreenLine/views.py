@@ -57,12 +57,18 @@ def main(request) :
         shipper = Shipper.objects.filter(id=shipper_id).first()
         consignees = Consignee.objects.filter(shipper=shipper)
         if request.POST["radio"] == "name" :
+            form.phone = ''
+            form.consignee = 0
             consignees = consignees.filter(name__contains=request.POST["name"])
             if consignees.count() <= 0 :
-                consignees = consignees.filter(name__contains=request.POST["kana"])
+                consignees = consignees.filter(kana__contains=request.POST["kana"])
         elif request.POST["radio"] == "phone" :
+            form.name = ''
+            form.consignee = 0
             consignees = Consignee.objects.filter(phone__contains=request.POST['phone'])
         elif request.POST["radio"] == "city" :
+            form.name = ''
+            form.phone = ''
             prefecture_id = int(request.POST['prefecture'])
             city_id = int(request.POST['city'])
             consignee_id = int(request.POST['consignee'])

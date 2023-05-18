@@ -76,7 +76,7 @@
                         {% endif %}
                     </select>
             </div></div>
-            <div class="row row_consignee"><div class="col-3 text-end">{{ form.consignee.label_tag }}</div><div class="col-9">{{ form.consignee }}
+            <div class="row row_consignee"><div class="col-3 text-end"></div><div class="col-9">{{ form.consignee }}
                 <select class="form-control consignee_select">
                     {% if consignee_list %}
                         {% for consignee in consignee_list %}
@@ -151,18 +151,24 @@
                 $('.prefecture').val('');
                 $('.consignee_select').prop('disabled', true);
             } else if (checked_radio_val === 'name') {
+                $('.phone').val('');
+                $('.prefecture_select').val(0).change();
                 $('.name').prop('disabled', false);
                 $('.phone').prop('disabled', true);
                 $('.prefecture_select').prop('disabled', true);
                 $('.city_select').prop('disabled', true);
                 $('.consignee_select').prop('disabled', true);
             } else if (checked_radio_val === 'phone') {
+                $('.name').val('');
+                $('.prefecture_select').val(0).change();
                 $('.name').prop('disabled', true);
                 $('.phone').prop('disabled', false);
                 $('.prefecture_select').prop('disabled', true);
                 $('.city_select').prop('disabled', true);
                 $('.consignee_select').prop('disabled', true);
             } else if (checked_radio_val === 'city') {
+                $('.name').val('');
+                $('.phone').val('');
                 $('.name').prop('disabled', true);
                 $('.phone').prop('disabled', true);
                 $('.prefecture_select').prop('disabled', false);
@@ -239,7 +245,8 @@
             $('.city_select').change(changeCity);
             $('.consignee_select').change(changeConsignee);
             $('.submit').prop('disabled', true);
-            $('.radio').prop('disabled', true);
+            selected_shipper_id = $('.shipper > option:selected').val();
+            $('.radio').prop('disabled', !(selected_shipper_id));
             $('.name').prop('disabled', true);
             $('.phone').prop('disabled', true);
             $('.prefecture_select').prop('disabled', true);

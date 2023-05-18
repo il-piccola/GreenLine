@@ -30,6 +30,7 @@
                 <tr>
                     <th scope="col">名称</th>
                     <th scope="col">カナ</th>
+                    <th scope="col">納品先</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,6 +38,11 @@
                 <tr>
                     <td><a href="{% url 'shipper' e.id 0 %}">{{ e.name }}</a></td>
                     <td>{{ e.kana }}</td>
+                    <td>
+                        {% for consignee in e.consignee.all %}
+                            {{ consignee.name }}<br>
+                        {% endfor %}
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
