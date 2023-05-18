@@ -49,20 +49,30 @@ def main(request) :
         'form' : MainForm(),
         'shipper_list' : Shipper.objects.all(),
     }
-    print(params['shipper_list'])
     if (request.method != 'POST') :
         return render(request, 'main.html', params)
     else :
         form = MainForm(data=request.POST)
-        consignees = Consignee.objects.all()
+        shipper_id = int(request.POST["shipper"])
+        shipper = Shipper.objects.filter(id=shipper_id).first()
+        consignees = Consignee.objects.filter(shipper=shipper)
         if request.POST["radio"] == "name" :
-            consignees = consignees.filter(name_contains=request.POST["name"])
+            consignees = consignees.filter(name__contains=request.POST["name"])
             if consignees.count() <= 0 :
-                consignees = consignees.filter(name_contains=request.POST["kana"])
+                consignees = consignees.filter(name__contains=request.POST["kana"])
         elif request.POST["radio"] == "phone" :
             consignees = Consignee.objects.filter(phone__contains=request.POST['phone'])
         elif request.POST["radio"] == "city" :
-            consignees = consignees.filter(id=request.POST['consignee'])
+            prefecture_id = int(request.POST['prefecture'])
+            city_id = int(request.POST['city'])
+            consignee_id = int(request.POST['consignee'])
+            consignees = consignees.filter(id=consignee_id)
+            params['prefecture_list'] = get_prefecture_select_from_shipper(shipper_id)
+            params['prefecture_selected'] = prefecture_id
+            params['city_list'] = get_city_select_from_shipper(shipper_id, prefecture_id)
+            params['city_selected'] = city_id
+            params['consignee_list'] = get_consignee_select_from_shipper(shipper, city_id)
+            params['consignee_selected'] = consignee_id
         files = File.objects.filter(consignee__in=consignees)
         if files and files.count() > 0 :
             params['files'] = files
@@ -588,6 +598,7 @@ def get_cities(request) :
     prefecture_id = request.GET.get('prefecture_id')
     return JsonResponse({'cities': get_city_select(prefecture_id)})
 
+@csrf_exempt
 def get_employee(request, auth_flg) :
     if not 'employee' in request.session :
         return None
@@ -603,7 +614,6 @@ def get_city_select(prefecture_id) :
     city_list = []
     for city in cities:
         city_list.append({'id': city.id, 'name': city.name})
-    print(city_list)
     return city_list
 
 @csrf_exempt
@@ -636,22 +646,41 @@ def get_phone(request) :
 @csrf_exempt
 def get_prefectures_from_shipper(request) :
     shipper_id = request.GET.get('shipper_id')
+    return JsonResponse({'prefectures': get_prefecture_select_from_shipper(shipper_id)})
+
+def get_prefecture_select_from_shipper(shipper_id) :
     consignees = Consignee.objects.filter(shipper=shipper_id).order_by('id')
     cities = City.objects.filter(id__in=consignees.values_list('city', flat=True))
     prefectures = Prefecture.objects.filter(id__in=cities.values_list('prefecture', flat=True))
     prefecture_list = [{'id': 0, 'name': '---------'}]
     for prefecture in prefectures :
         prefecture_list.append({'id': prefecture.id, 'name': prefecture.name})
-    return JsonResponse({'prefectures': prefecture_list})
+    return prefecture_list
 
 @csrf_exempt
 def get_cities_from_shipper(request) :
     shipper_id = request.GET.get('shipper_id')
     prefecture_id = request.GET.get('prefecture_id')
+    return JsonResponse({'cities': get_city_select_from_shipper(shipper_id, prefecture_id)})
+
+def get_city_select_from_shipper(shipper_id, prefecture_id) :
     cities = City.objects.filter(prefecture_id=prefecture_id).order_by('id')
     consignees = Consignee.objects.filter(shipper=shipper_id, city__in=cities).order_by('id')
     cities = City.objects.filter(id__in=consignees.values_list('city', flat=True))
     city_list = [{'id': 0, 'name': '---------'}]
     for city in cities :
         city_list.append({'id': city.id, 'name': city.name})
-    return JsonResponse({'cities': city_list})
+    return city_list
+
+@csrf_exempt
+def get_consignees_from_shipper(request) :
+    shipper_id = request.GET.get('shipper_id')
+    city_id = request.GET.get('city_id')
+    return JsonResponse({'consignees': get_consignee_select_from_shipper(shipper_id, city_id)})
+
+def get_consignee_select_from_shipper(shipper, city_id) :
+    consignees = Consignee.objects.filter(city_id=city_id, shipper=shipper).order_by('id')
+    consignee_list = []
+    for consignee in consignees :
+        consignee_list.append({'id': consignee.id, 'name': consignee.name})
+    return consignee_list

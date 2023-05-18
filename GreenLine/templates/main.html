@@ -24,15 +24,10 @@
         </div>
     </div>
     <p>{{ msg }}</p>
-    <div id="main_form" class="container" style="height: 7vh; padding-bottom: 10px;">
+    <div id="main_form" class="container" style="height: 30vh; padding-bottom: 10px;">
         {% csrf_token %}
         <form action="{% url 'main' %}" method="POST">
             <div class="row"><div class="col-3 text-end">{{ form.shipper.label_tag }}</div><div class="col-9">{{ form.shipper }}</div></div>
-            <!-- <div class="row"><div class="col-3 text-end">{{ form.radio.label_tag }}</div><div class="col-9">
-                {% for c in form.radio %}
-                    {{ c.tag }}<label class="form-check-label">{{ c.choice_label }}</label>
-                {% endfor %}
-            </div></div> -->
             <div class="row row_name">
                 <div class="col-3 text-end">
                     {{ form.radio.0.tag }}<label class="form-check-label">{{ form.radio.0.choice_label }}</label>
@@ -64,32 +59,36 @@
                             {% endfor %}
                         {% endif %}
                     </select>
-                </div>
-            </div>
-            <div class="row row_city"><div class="col-3 text-end"></div><div class="col-9">{{ form.city }}
-                <select id="city_select" class="form-control city_select">
-                    {% if city_list %}
-                        {% for city in city_list %}
-                            {% if city_selected %}
-                                {% if city.id == city_selected %}
-                                    <option id="{{ city.id }}" selected>{{ city.name }}</option>
+            </div></div>
+            <div class="row row_city">
+                <div class="col-3 text-end"></div><div class="col-9">{{ form.city }}
+                    <select id="city_select" class="form-control city_select">
+                        {% if city_list %}
+                            {% for city in city_list %}
+                                {% if city_selected %}
+                                    {% if city.id == city_selected %}
+                                        <option id="{{ city.id }}" selected>{{ city.name }}</option>
+                                    {% else %}
+                                        <option id="{{ city.id }}">{{ city.name }}</option>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+            </div></div>
+            <div class="row row_consignee"><div class="col-3 text-end">{{ form.consignee.label_tag }}</div><div class="col-9">{{ form.consignee }}
+                <select class="form-control consignee_select">
+                    {% if consignee_list %}
+                        {% for consignee in consignee_list %}
+                            {% if consignee_selected %}
+                                {% if consignee.id == consignee_selected %}
+                                    <option id="{{ consignee.id }}" selected>{{ consignee.name }}</option>
                                 {% else %}
-                                    <option id="{{ city.id }}">{{ city.name }}</option>
+                                    <option id="{{ consignee.id }}">{{ consignee.name }}</option>
                                 {% endif %}
                             {% endif %}
                         {% endfor %}
                     {% endif %}
-                </select>
-            </div></div>
-            <div class="row row_consignee"><div class="col-3 text-end">{{ form.consignee.label_tag }}</div><div class="col-9">{{ form.consignee }}
-                <select class="form-control consignee_select">
-                    {% for consignee in consignee_list %}
-                        {% if consignee.id == consignee_selected %}
-                            <option id="{{ consignee.id }}" selected>{{ consignee.name }}</option>
-                        {% else %}
-                            <option id="{{ consignee.id }}">{{ consignee.name }}</option>
-                        {% endif %}
-                    {% endfor %}
                 </select>
             </div></div>
             <div class="row"><div class="col-3"></div><div class="col-9">
@@ -98,7 +97,7 @@
         </form>
     </div>
     {% if files %}
-    <div id="main_file" class="container" style="height: 65vh;">
+    <div id="main_file" class="container" style="height: 30vh;">
         <div class="row">
             {% for f in files %}
             <div class="col-12 h3 pt-3"><a href="{{ f.file.url }}" target="_blank" rel="noopener noreferrer">{{ f.file.name }}</a></div>
@@ -111,6 +110,13 @@
     <script>
         function changeShipper(eo) {
             selected_shipper_id = $('.shipper > option:selected').val();
+            $('.submit').prop('disabled', true);
+            $('.radio').prop('disabled', true);
+            $('.name').prop('disabled', true);
+            $('.phone').prop('disabled', true);
+            $('.prefecture_select').prop('disabled', true);
+            $('.city_select').prop('disabled', true);
+            $('.consignee_select').prop('disabled', true);
             $('.radio').prop('disabled', !(selected_shipper_id));
             $('.radio').prop('checked', false).change();
             if (!selected_shipper_id) {
@@ -168,10 +174,12 @@
         function changePrefecture(eo) {
             selected_prefecture_id = $('.prefecture_select > option:selected').val();
             console.log(selected_prefecture_id);
+            $('.prefecture').val(selected_prefecture_id);
+            $('.consignee').val('');
+            $('.consignee_select').empty();
             if (!selected_prefecture_id) {
                 return;
             }
-            $('.prefecture').val(selected_prefecture_id);
             $.ajax({
                 url: "{% url 'get_cities_from_shipper' %}",
                 data: {
@@ -185,8 +193,6 @@
                     $.each(data.cities, function (i, city) {
                         city_select.append($('<option></option>').val(city.id).html(city.name));
                     });
-                    $('.consignee').val('');
-                    $('.consignee_select').empty();
                     city_select.val(data.cities[0].id).change();
                 }
             });
@@ -194,13 +200,16 @@
         function changeCity(eo) {
             selected_city_id = $('.city_select > option:selected').val();
             console.log(selected_city_id);
+            $('.city').val(selected_city_id);
+            $('.consignee').val('');
+            $('.consignee_select').empty();
             if (!selected_city_id) {
                 return;
             }
-            $('.city').val(selected_city_id);
             $.ajax({
-                url: "{% url 'get_consignees' %}",
+                url: "{% url 'get_consignees_from_shipper' %}",
                 data: {
+                    'shipper_id': $('.shipper > option:selected').val(),
                     'city_id': selected_city_id
                 },
                 dataType: 'json',
@@ -218,10 +227,10 @@
         }
         function changeConsignee(eo) {
             selected_consignee_id = $('.consignee_select > option:selected').val();
+            $('.consignee').val(selected_consignee_id);
             if (!selected_consignee_id) {
                 return;
             }
-            $('.consignee').val(selected_consignee_id);
         }
         $(document).ready(function() {
             $('.shipper').change(changeShipper);
