@@ -97,7 +97,7 @@
         </form>
     </div>
     {% if files %}
-    <div id="main_file" class="container" style="height: 30vh;">
+    <div id="main_file" class="container" style="height: 30vh; padding-bottom: 10px;">
         <div class="row">
             {% for f in files %}
             <div class="col-12 h3 pt-3"><a href="{{ f.file.url }}" target="_blank" rel="noopener noreferrer">{{ f.file.name }}</a></div>
