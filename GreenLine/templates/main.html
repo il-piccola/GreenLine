@@ -51,10 +51,12 @@
                             {% for prefecture in prefecture_list %}
                                 {% if prefecture_selected %}
                                     {% if prefecture.id == prefecture_selected %}
-                                        <option id="{{ prefecture.id }}" selected>{{ prefecture.name }}</option>
+                                        <option value="{{ prefecture.id }}" selected>{{ prefecture.name }}</option>
                                     {% else %}
-                                        <option id="{{ prefecture.id }}">{{ prefecture.name }}</option>
+                                        <option value="{{ prefecture.id }}">{{ prefecture.name }}</option>
                                     {% endif %}
+                                {% else %}
+                                    <option value="{{ prefecture.id }}">{{ prefecture.name }}</option>
                                 {% endif %}
                             {% endfor %}
                         {% endif %}
@@ -67,10 +69,12 @@
                             {% for city in city_list %}
                                 {% if city_selected %}
                                     {% if city.id == city_selected %}
-                                        <option id="{{ city.id }}" selected>{{ city.name }}</option>
+                                        <option value="{{ city.id }}" selected>{{ city.name }}</option>
                                     {% else %}
-                                        <option id="{{ city.id }}">{{ city.name }}</option>
+                                        <option value="{{ city.id }}">{{ city.name }}</option>
                                     {% endif %}
+                                {% else %}
+                                    <option value="{{ city.id }}">{{ city.name }}</option>
                                 {% endif %}
                             {% endfor %}
                         {% endif %}
@@ -82,10 +86,12 @@
                         {% for consignee in consignee_list %}
                             {% if consignee_selected %}
                                 {% if consignee.id == consignee_selected %}
-                                    <option id="{{ consignee.id }}" selected>{{ consignee.name }}</option>
+                                    <option value="{{ consignee.id }}" selected>{{ consignee.name }}</option>
                                 {% else %}
-                                    <option id="{{ consignee.id }}">{{ consignee.name }}</option>
+                                    <option value="{{ consignee.id }}">{{ consignee.name }}</option>
                                 {% endif %}
+                            {% else %}
+                                <option value="{{ consignee.id }}">{{ consignee.name }}</option>
                             {% endif %}
                         {% endfor %}
                     {% endif %}
@@ -96,29 +102,34 @@
             </div></div>
         </form>
     </div>
-    {% if files %}
     <div id="main_file" class="container" style="height: 30vh; padding-bottom: 10px;">
         <div class="row row_file">
+            {% if files %}
             {% for f in files %}
             <div class="col-12 h3 pt-3"><a href="{{ f.file.url }}" target="_blank" rel="noopener noreferrer">{{ f.file.name }}</a></div>
             {% endfor %}
+            {% endif %}
         </div>
     </div>
-    {% endif %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script>
         function changeShipper(eo) {
             selected_shipper_id = $('.shipper > option:selected').val();
+            $('.prefecture').val('');
+            $('.prefecture_select').empty();
+            $('.city').val('');
+            $('.city_select').empty();
+            $('.consignee').val('');
+            $('.consignee_select').empty();
             $('.submit').prop('disabled', true);
-            $('.radio').prop('disabled', true);
+            $('.radio').prop('disabled', !(selected_shipper_id));
+            $('.radio').prop('checked', false).change();
             $('.name').prop('disabled', true);
             $('.phone').prop('disabled', true);
             $('.prefecture_select').prop('disabled', true);
             $('.city_select').prop('disabled', true);
             $('.consignee_select').prop('disabled', true);
-            $('.radio').prop('disabled', !(selected_shipper_id));
-            $('.radio').prop('checked', false).change();
             $('.row_file').html('')
             if (!selected_shipper_id) {
                 $('.prefecture_select').val(0).change();
@@ -131,14 +142,10 @@
                 },
                 dataType: 'json',
                 success: function (data) {
-                    $('.prefecture').val('');
-                    var prefecture_select = $('.prefecture_select');
-                    prefecture_select.empty();
                     $.each(data.prefectures, function (i, prefecture) {
-                        prefecture_select.append($('<option></option>').val(prefecture.id).html(prefecture.name));
+                        $('.prefecture_select').append($('<option></option>').val(prefecture.id).html(prefecture.name));
                     });
-                    $('.city').val('');
-                    $('.city_select').empty();
+                    $('.prefecture_select').val(data.prefectures[0].id);
                 }
             });
         }
@@ -175,16 +182,22 @@
                 $('.city_select').prop('disabled', false);
                 $('.consignee_select').prop('disabled', false);
             }
-            $('.submit').prop('disabled', (!checked_radio_val));
+            if (checked_radio_val === 'city') {
+                $('.submit').prop('disabled', true);
+            } else {
+                $('.submit').prop('disabled', (!checked_radio_val));
+            }
         }
         function changePrefecture(eo) {
-            selected_prefecture_id = $('.prefecture_select > option:selected').val();
+            selected_prefecture_id = $('.prefecture_select').val();
             console.log(selected_prefecture_id);
             $('.prefecture').val(selected_prefecture_id);
             $('.city').val('');
             $('.city_select').empty();
             $('.consignee').val('');
             $('.consignee_select').empty();
+            $('.row_file').html(selected_prefecture_id);
+            $('.submit').prop('disabled', true);
             if (!selected_prefecture_id) {
                 return;
             }
@@ -196,12 +209,10 @@
                 },
                 dataType: 'json',
                 success: function (data) {
-                    var city_select = $('.city_select');
-                    city_select.empty();
                     $.each(data.cities, function (i, city) {
-                        city_select.append($('<option></option>').val(city.id).html(city.name));
+                        $('.city_select').append($('<option></option>').val(city.id).html(city.name));
                     });
-                    city_select.val(data.cities[0].id).change();
+                    $('.city_select').val(0).change();
                 }
             });
         }
@@ -211,6 +222,8 @@
             $('.city').val(selected_city_id);
             $('.consignee').val('');
             $('.consignee_select').empty();
+            $('.row_file').html(selected_city_id);
+            $('.submit').prop('disabled', true);
             if (!selected_city_id) {
                 return;
             }
@@ -222,22 +235,24 @@
                 },
                 dataType: 'json',
                 success: function (data) {
-                    var consignee_select = $('.consignee_select');
-                    consignee_select.empty();
                     $.each(data.consignees, function (i, consignee) {
-                        consignee_select.append($('<option></option>').val(consignee.id).html(consignee.name));
+                        $('.consignee_select').append($('<option></option>').val(consignee.id).html(consignee.name));
                     });
                     if (data.consignees.length > 0) {
-                        consignee_select.val(data.consignees[0].id).change();
+                        $('.consignee_select').val(0);
                     }
                 }
             });
         }
         function changeConsignee(eo) {
             selected_consignee_id = $('.consignee_select > option:selected').val();
+            console.log(selected_consignee_id);
             $('.consignee').val(selected_consignee_id);
-            if (!selected_consignee_id) {
-                return;
+            $('.row_file').html(selected_consignee_id);
+            if (selected_consignee_id == 0) {
+                $('.submit').prop('disabled', true);
+            } else {
+                $('.submit').prop('disabled', false);
             }
         }
         $(document).ready(function() {
