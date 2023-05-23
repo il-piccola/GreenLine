@@ -181,6 +181,8 @@
             selected_prefecture_id = $('.prefecture_select > option:selected').val();
             console.log(selected_prefecture_id);
             $('.prefecture').val(selected_prefecture_id);
+            $('.city').val('');
+            $('.city_select').empty();
             $('.consignee').val('');
             $('.consignee_select').empty();
             if (!selected_prefecture_id) {
