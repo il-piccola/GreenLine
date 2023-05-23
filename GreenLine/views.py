@@ -48,6 +48,7 @@ def main(request) :
         'organizaion' : employee.organization.name,
         'form' : MainForm(),
         'shipper_list' : Shipper.objects.all(),
+        'radio' : '',
     }
     if (request.method != 'POST') :
         return render(request, 'main.html', params)
@@ -59,13 +60,14 @@ def main(request) :
         if request.POST["radio"] == "name" :
             form.phone = ''
             form.consignee = 0
-            consignees = consignees.filter(name__contains=request.POST["name"])
-            if consignees.count() <= 0 :
-                consignees = consignees.filter(kana__contains=request.POST["kana"])
+            if request.POST["name"] :
+                consignees = consignees.filter(name__contains=request.POST["name"])
+                if consignees.count() <= 0 :
+                    consignees = consignees.filter(kana__contains=request.POST["name"])
         elif request.POST["radio"] == "phone" :
             form.name = ''
             form.consignee = 0
-            consignees = Consignee.objects.filter(phone__contains=request.POST['phone'])
+            consignees = consignees.filter(phone__contains=request.POST['phone'])
         elif request.POST["radio"] == "city" :
             form.name = ''
             form.phone = ''
@@ -79,6 +81,7 @@ def main(request) :
             params['city_selected'] = city_id
             params['consignee_list'] = get_consignee_select_from_shipper(shipper, city_id)
             params['consignee_selected'] = consignee_id
+        params['radio'] = request.POST["radio"]
         files = File.objects.filter(consignee__in=consignees)
         if files and files.count() > 0 :
             params['files'] = files

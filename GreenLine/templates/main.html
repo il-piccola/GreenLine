@@ -98,7 +98,7 @@
     </div>
     {% if files %}
     <div id="main_file" class="container" style="height: 30vh; padding-bottom: 10px;">
-        <div class="row">
+        <div class="row row_file">
             {% for f in files %}
             <div class="col-12 h3 pt-3"><a href="{{ f.file.url }}" target="_blank" rel="noopener noreferrer">{{ f.file.name }}</a></div>
             {% endfor %}
@@ -119,11 +119,11 @@
             $('.consignee_select').prop('disabled', true);
             $('.radio').prop('disabled', !(selected_shipper_id));
             $('.radio').prop('checked', false).change();
+            $('.row_file').html('')
             if (!selected_shipper_id) {
                 $('.prefecture_select').val(0).change();
                 return;
             }
-            selected_shipper_id = $('.shipper > option:selected').val();
             $.ajax({
                 url: "{% url 'get_prefectures_from_shipper' %}",
                 data: {
@@ -246,14 +246,23 @@
             $('.prefecture_select').change(changePrefecture);
             $('.city_select').change(changeCity);
             $('.consignee_select').change(changeConsignee);
-            $('.submit').prop('disabled', true);
             selected_shipper_id = $('.shipper > option:selected').val();
             $('.radio').prop('disabled', !(selected_shipper_id));
-            $('.name').prop('disabled', true);
-            $('.phone').prop('disabled', true);
-            $('.prefecture_select').prop('disabled', true);
-            $('.city_select').prop('disabled', true);
-            $('.consignee_select').prop('disabled', true);
+            {% if not radio %}
+            $('.submit').prop('disabled', true);
+            {% else %}
+                {% if radio != 'name' %}
+                $('.name').prop('disabled', true);
+                {% endif %}
+                {% if radio != 'phone' %}
+                $('.phone').prop('disabled', true);
+                {% endif %}
+                {% if radio != 'city' %}
+                $('.prefecture_select').prop('disabled', true);
+                $('.city_select').prop('disabled', true);
+                $('.consignee_select').prop('disabled', true);
+                {% endif %}
+            {% endif %}
         });
     </script>
 </body>
