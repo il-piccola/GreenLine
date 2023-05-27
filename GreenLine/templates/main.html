@@ -122,7 +122,7 @@
             $('.city_select').empty();
             $('.consignee').val('');
             $('.consignee_select').empty();
-            $('.submit').prop('disabled', true);
+            // $('.submit').prop('disabled', true);
             $('.radio').prop('disabled', !(selected_shipper_id));
             $('.radio').prop('checked', false).change();
             $('.name').prop('disabled', true);
@@ -182,11 +182,7 @@
                 $('.city_select').prop('disabled', false);
                 $('.consignee_select').prop('disabled', false);
             }
-            if (checked_radio_val === 'city') {
-                $('.submit').prop('disabled', true);
-            } else {
-                $('.submit').prop('disabled', (!checked_radio_val));
-            }
+            $('.submit').prop('disabled', !(checked_radio_val));
         }
         function changePrefecture(eo) {
             selected_prefecture_id = $('.prefecture_select').val();
@@ -196,7 +192,7 @@
             $('.city_select').empty();
             $('.consignee').val('');
             $('.consignee_select').empty();
-            $('.row_file').html(selected_prefecture_id);
+            // $('.row_file').html(selected_prefecture_id);
             $('.submit').prop('disabled', true);
             if (!selected_prefecture_id) {
                 return;
@@ -222,7 +218,7 @@
             $('.city').val(selected_city_id);
             $('.consignee').val('');
             $('.consignee_select').empty();
-            $('.row_file').html(selected_city_id);
+            // $('.row_file').html(selected_city_id);
             $('.submit').prop('disabled', true);
             if (!selected_city_id) {
                 return;
@@ -239,7 +235,7 @@
                         $('.consignee_select').append($('<option></option>').val(consignee.id).html(consignee.name));
                     });
                     if (data.consignees.length > 0) {
-                        $('.consignee_select').val(0);
+                        $('.consignee_select').val(0).change();
                     }
                 }
             });
@@ -248,8 +244,8 @@
             selected_consignee_id = $('.consignee_select > option:selected').val();
             console.log(selected_consignee_id);
             $('.consignee').val(selected_consignee_id);
-            $('.row_file').html(selected_consignee_id);
-            if (selected_consignee_id == 0) {
+            // $('.row_file').html(selected_consignee_id);
+            if (selected_consignee_id === 0) {
                 $('.submit').prop('disabled', true);
             } else {
                 $('.submit').prop('disabled', false);
