@@ -80,7 +80,7 @@
                         {% endif %}
                     </select>
             </div></div>
-            <div class="row row_consignee"><div class="col-3 text-end"></div><div class="col-9">{{ form.consignee }}
+            <div class="row row_consignee" visible="false"><div class="col-3 text-end"></div><div class="col-9">{{ form.consignee }}
                 <select class="form-control consignee_select">
                     {% if consignee_list %}
                         {% for consignee in consignee_list %}
@@ -274,6 +274,7 @@
                 $('.consignee_select').prop('disabled', true);
                 {% endif %}
             {% endif %}
+            $('.row_consignee').hide();
         });
     </script>
 </body>

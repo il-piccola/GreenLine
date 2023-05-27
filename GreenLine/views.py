@@ -55,6 +55,9 @@ def main(request) :
     else :
         form = MainForm(data=request.POST)
         shipper_id = int(request.POST["shipper"])
+        prefecture_id = int(request.POST['prefecture'])
+        city_id = int(request.POST['city'])
+        consignee_id = int(request.POST['consignee'])
         shipper = Shipper.objects.filter(id=shipper_id).first()
         consignees = Consignee.objects.filter(shipper=shipper)
         if request.POST["radio"] == "name" :
@@ -71,16 +74,18 @@ def main(request) :
         elif request.POST["radio"] == "city" :
             form.name = ''
             form.phone = ''
-            prefecture_id = int(request.POST['prefecture'])
-            city_id = int(request.POST['city'])
-            consignee_id = int(request.POST['consignee'])
-            consignees = consignees.filter(id=consignee_id)
-            params['prefecture_list'] = get_prefecture_select_from_shipper(shipper_id)
-            params['prefecture_selected'] = prefecture_id
-            params['city_list'] = get_city_select_from_shipper(shipper_id, prefecture_id)
-            params['city_selected'] = city_id
-            params['consignee_list'] = get_consignee_select_from_shipper(shipper, city_id)
-            params['consignee_selected'] = consignee_id
+            if consignee_id and consignee_id > 0 :
+                consignees = consignees.filter(id=consignee_id)
+            elif city_id and city_id > 0 :
+                consignees = consignees.filter(city_id=city_id)
+            elif prefecture_id and prefecture_id > 0 :
+                consignees = consignees.filter(city__in=City.objects.filter(prefecture_id=prefecture_id))
+        params['prefecture_list'] = get_prefecture_select_from_shipper(shipper_id)
+        params['prefecture_selected'] = prefecture_id
+        params['city_list'] = get_city_select_from_shipper(shipper_id, prefecture_id)
+        params['city_selected'] = city_id
+        params['consignee_list'] = get_consignee_select_from_shipper(shipper, city_id)
+        params['consignee_selected'] = consignee_id
         params['radio'] = request.POST["radio"]
         files = File.objects.filter(consignee__in=consignees)
         if files and files.count() > 0 :
