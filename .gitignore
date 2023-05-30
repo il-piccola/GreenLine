@@ -1,7 +1,3 @@
-GreenLine/__pycache__/
-GreenLine/migrations/__pycache__/
-db.sqlite3
-media/*.pdf
-static/admin/
-log/*.log
-.vscode/
+version https://git-lfs.github.com/spec/v1
+oid sha256:5fe638ddcb00e9e1e8314deccc145d1352cd3c60ffbdb0fcb90e320cc07ff9ca
+size 113

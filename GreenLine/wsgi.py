@@ -1,16 +1,3 @@
-"""
-WSGI config for GreenLine project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/4.0/howto/deployment/wsgi/
-"""
-
-import os
-
-from django.core.wsgi import get_wsgi_application
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'GreenLine.settings')
-
-application = get_wsgi_application()
+version https://git-lfs.github.com/spec/v1
+oid sha256:9b5dd1513330e0ac2c379e79e05acc87e5af5b05e9b135b02bab679d6f414497
+size 395
