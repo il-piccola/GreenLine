@@ -1,3 +1,245 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:f3dfda265e2d2116f6a77d559a7a731d5426514f0eb24e7623c6bb923aed9efe
-size 11633
+{% load static %}
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>{{ title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+</head>
+<body class="container" style="height: 95vh;">
+    <div class="row align-items-start">
+        <div class="col-2"><img src="{% static 'title.png' %}" width="100%"></div>
+        <div id="main_header" class="col-10 container" style="height: 10vh; padding-bottom: 10px;">
+            <div class="row align-items-center">
+                <div class="col-6 text-start"><h1 class="display-4 text-primary">{{ title }}</h1></div>
+                <div class="col-4 container">
+                    <div class="row"><div class="col text-end">氏名：{{ name }}</div></div>
+                    <div class="row"><div class="col text-end">所属：{{ organizaion }}</div></div>
+                </div>
+                <div class="col-2 container">
+                    <div class="row"><div class="col text-end"><a href="{% url 'admin_login' %}">ログアウト</a></div></div>
+                    <div class="row"><div class="col text-end"><a href="{% url 'admin_main' %}">戻る</a></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p>{{ msg }}</p>
+    {% csrf_token %}
+    <form action="{% url 'add_file' %}" method="POST" enctype="multipart/form-data">
+    <div class="container" style="width: 80%;">
+        <div class="row">
+            <div class="col-3 text-end">{{ form.zip.label_tag }}</div>
+            <div class="col-4 text-end">{{ form.zip }}</div>
+            <div class="col-5"><button type="button" class="btn btn-primary mt-2" onclick="getAddress()">検索</button><span class="zip_error">{{ form.zip.errors }}</span></div>
+        </div>
+        <div class="row"><div class="col-3 text-end">{{ form.prefecture.label_tag }}</div><div class="col-9">{{ form.prefecture }}</div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.city.label_tag }}</div><div class="col-9">{{ form.city }}
+            <select id="city_select" class="form-control city_select">
+                {% if city_list %}
+                    {% for city in city_list %}
+                        {% if city_selected %}
+                            {% if city.id == city_selected %}
+                                <option value="{{ city.code }}" selected>{{ city.name }}</option>
+                            {% else %}
+                                <option value="{{ city.code }}">{{ city.name }}</option>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.town.label_tag }}</div><div class="col-9">{{ form.town }}
+            <select id="town_select" class="form-control town_select">
+                {% if town_list %}
+                    {% for town in town_list %}
+                        {% if town_selected %}
+                            {% if town.code == town_selected %}
+                                <option value="{{ town.code }}" selected>{{ town.name }}</option>
+                            {% else %}
+                                <option value="{{ town.code }}">{{ town.name }}</option>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.consignee.label_tag }}</div><div class="col-9">{{ form.consignee }}
+            <select id="consignee_select" class="form-control consignee_select">
+                {% if consignee_list %}
+                    {% for consignee in consignee_list %}
+                        {% if consignee_selected %}
+                            {% if consignee.id == consignee_selected %}
+                                <option value="{{ consignee.id }}" selected>{{ consignee.name }}</option>
+                            {% else %}
+                                <option value="{{ consignee.id }}">{{ consignee.name }}</option>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div></div>
+        <div class="row"><div class="col-3 text-end">電話番号:</div><div id="phone" class="col-9 phone"></div></div>
+        <div class="row"><div class="col-3 text-end">{{ form.file.label_tag }}</div><div class="col-9">{{ form.file }}{{ form.file.errors }}</div></div>
+        <div class="row"><div class="col-3"></div><div class="col-9">
+            <input type="submit" value="アップロード" class="btn btn-primary mt-2">
+        </div></div>
+    </div>
+    </form>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script>
+        function getAddress() {
+            zip = $('.zip').val();
+            if (!zip) {
+                return;
+            }
+            $.ajax({
+                url: "{% url 'get_address_from_zip' %}",
+                data: {
+                    'zip': zip
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (!data.prefecture.id || !data.city.code || !data.towns || data.towns.length <= 0) {
+                        $('.zip_error').html("存在しない郵便番号です");
+                        return;
+                    }
+                    $('.zip_error').html('')
+                    $('.consignee_select').empty();
+                    $('.consignee').empty();
+                    var prefecture = $('.prefecture');
+                    prefecture.empty();
+                    prefecture.append($('<option></option>').val(data.prefecture.id).html(data.prefecture.name));
+                    var city_select = $('.city_select');
+                    city_select.empty();
+                    city_select.append($('<option></option>').val(data.city.code).html(data.city.name));
+                    $('.city').val(data.city.code);
+                    var town_select = $('.town_select');
+                    town_select.empty();
+                    $.each(data.towns, function (i, town) {
+                        town_select.append($('<option></option>').val(town.code).html(town.name));
+                    });
+                    if (data.towns.length > 1) {
+                        town_select.val(data.towns[1].code).change();
+                    } else if (data.towns.length > 0) {
+                        town_select.val(data.towns[0].code).change();
+                    }
+                }
+            });
+        }
+        function changePrefecture(eo) {
+            selected_prefecture_id = $('.prefecture > option:selected').val();
+            if (!selected_prefecture_id) {
+                return;
+            }
+            $.ajax({
+                url: "{% url 'get_cities' %}",
+                data: {
+                    'prefecture_id': selected_prefecture_id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $('.zip').val('');
+                    $('.zip_error').html('')
+                    $('.address').val('');
+                    $('.consignee_select').empty();
+                    $('.consignee').empty();
+                    var city_select = $('.city_select');
+                    city_select.empty();
+                    $.each(data.cities, function (i, city) {
+                        city_select.append($('<option></option>').val(city.code).html(city.name));
+                    });
+                    city_select.val(data.cities[0].code).change();
+                }
+            });
+        }
+        function changeCity(eo) {
+            selected_city_code = $('.city_select > option:selected').val();
+            if (!selected_city_code) {
+                return;
+            }
+            $('.city').val(selected_city_code);
+            $.ajax({
+                url: "{% url 'get_towns' %}",
+                data: {
+                    'city_code': selected_city_code
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $('.consignee_select').empty();
+                    $('.consignee').empty();
+                    var town_select = $('.town_select');
+                    town_select.empty();
+                    $.each(data.towns, function (i, town) {
+                        town_select.append($('<option></option>').val(town.code).html(town.name));
+                    });
+                    if (data.towns.length > 1) {
+                        town_select.val(data.towns[1].code).change();
+                    } else if (data.towns.length > 0) {
+                        town_select.val(data.towns[0].code).change();
+                    }
+                }
+            });
+        }
+        function changeTown(eo) {
+            selected_town_code = $('.town_select > option:selected').val();
+            if (!selected_town_code) {
+                return;
+            }
+            $('.town').val(selected_town_code);
+            $.ajax({
+                url: "{% url 'get_zip' %}",
+                data: {
+                    'town_code': selected_town_code
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $('.zip').val(data.zip);
+                }
+            });
+            $.ajax({
+                url: "{% url 'get_consignees' %}",
+                data: {
+                    'town_code': selected_town_code
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $('.consignee_select').empty();
+                    $('.consignee').empty();
+                    var consignee_select = $('.consignee_select');
+                    consignee_select.empty();
+                    $.each(data.consignees, function (i, consignee) {
+                        consignee_select.append($('<option></option>').val(consignee.id).html(consignee.name));
+                    });
+                    if (data.consignees.length > 0) {
+                        consignee_select.val(data.consignees[0].id).change();
+                    }
+                }
+            });
+        }
+        function changeConsignee(eo) {
+            selected_consignee_id = $('.consignee_select > option:selected').val();
+            if (!selected_consignee_id) {
+                return;
+            }
+            $('.consignee').val(selected_consignee_id);
+            $.ajax({
+                url: "{% url 'get_phone' %}",
+                data: {
+                    'consignee_id': selected_consignee_id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $('.phone').html(data.phone);
+                }
+            });
+        }
+        $(document).ready(function() {
+            $('.prefecture').change(changePrefecture);
+            $('.city_select').change(changeCity);
+            $('.town_select').change(changeTown);
+            $('.consignee_select').change(changeConsignee);
+        });
+    </script>
+</body>
+</html>

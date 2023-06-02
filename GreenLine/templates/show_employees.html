@@ -1,3 +1,53 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:76d072a6588a171ecd2044e04f124ee378c31eed1429f308a02761ad031b9a9c
-size 2504
+{% load static %}
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>{{ title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+</head>
+<body class="container" style="height: 95vh;">
+    <div class="row align-items-start">
+        <div class="col-2"><img src="{% static 'title.png' %}" width="100%"></div>
+        <div id="main_header" class="col-10 container" style="height: 10vh; padding-bottom: 10px;">
+            <div class="row align-items-center">
+            <div class="col-6 text-start"><h1 class="display-4 text-primary">{{ title }}</h1></div>
+            <div class="col-4 container">
+                <div class="row"><div class="col text-end">氏名：{{ name }}</div></div>
+                <div class="row"><div class="col text-end">所属：{{ organizaion }}</div></div>
+            </div>
+            <div class="col-2 container">
+                <div class="row"><div class="col text-end"><a href="{% url 'admin_login' %}">ログアウト</a></div></div>
+                <div class="row"><div class="col text-end"><a href="{% url 'admin_main' %}">戻る</a></div></div>
+            </div>
+            </div>
+        </div>
+    </div>
+    <p>{{ msg }}</p>
+    <div id="employees_list" class="container mt-5">
+        <table class=table>
+            <thead>
+                <tr>
+                    <th scope="col">従業員電話番号</th>
+                    <th scope="col">名前</th>
+                    <th scope="col">カナ</th>
+                    <th scope="col">所属</th>
+                    <th scope="col">管理者権限</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for e in list %}
+                <tr>
+                    <td><a href="{% url 'employee' e.id 0 %}">{{ e.phone }}</a></td>
+                    <td>{{ e.name }}</td>
+                    <td>{{ e.kana }}</td>
+                    <td>{{ e.organization.name }}</td>
+                    <td>{% if e.auth %}管理者{% endif %}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+</body>
+</html>
