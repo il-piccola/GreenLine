@@ -54,6 +54,8 @@ class Shipper(models.Model) :
     kana = models.CharField(max_length=1024, default='')
     def __str__(self) :
         return self.name
+    def get_consignee_list(self) :
+        return Consignee.objects.filter(shipper=self.id)
 
 # 納品先マスタ
 class Consignee(models.Model) :

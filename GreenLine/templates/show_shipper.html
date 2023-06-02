@@ -39,7 +39,7 @@
                     <td><a href="{% url 'shipper' e.id 0 %}">{{ e.name }}</a></td>
                     <td>{{ e.kana }}</td>
                     <td>
-                        {% for consignee in e.consignee.all %}
+                        {% for consignee in e.get_consignee_list %}
                             {{ consignee.name }}<br>
                         {% endfor %}
                     </td>
