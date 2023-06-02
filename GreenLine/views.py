@@ -453,7 +453,6 @@ def shipper(request, id, edit) :
         'id' : id,
         'edit' : edit,
         'form' : ShipperForm(instance=target),
-        'consignees' : Consignee.objects.filter(shipper=id).all()
     }
     if edit == 2 :
         params['msg'] = '本当に削除しますか？'

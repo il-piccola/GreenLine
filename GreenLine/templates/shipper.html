@@ -32,8 +32,8 @@
         <div class="row"><div class="col-3 text-end">{{ form.name.label_tag }}</div><div class="col-9">{{ form.name.value }}</div></div>
         <div class="row"><div class="col-3 text-end">{{ form.kana.label_tag }}</div><div class="col-9">{{ form.kana.value }}</div></div>
         <div class="row"><div class="col-3 text-end">納品先一覧:</div><div class="col-9">
-            {% if consignees.count > 0 %}
-                {% for item in consignees %}
+            {% if form.instance.get_consignee_list.count > 0 %}
+                {% for item in form.instance.get_consignee_list %}
                     {{ item.name }}<br>
                 {% endfor %}
             {% else %}
