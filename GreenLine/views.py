@@ -234,9 +234,9 @@ def employee(request, id, edit) :
     if edit == 2 :
         params['msg'] = '本当に削除しますか？'
     elif edit == 4 :
-        target = Shipper.objects.filter(id=id)
+        target = Employee.objects.filter(id=id)
         target.delete()
-        return redirect('show_shipper')
+        return redirect('show_employees')
     elif request.POST :
         form = EmployeeForm(data=request.POST)
         if form.is_valid() :
