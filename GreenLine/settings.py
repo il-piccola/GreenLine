@@ -28,10 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 if not DEBUG :
     ALLOWED_HOSTS = [
-        '43.206.243.94',
-        '52.193.11.241',
-        'greenline.test.02.team-shiny-99-99-9299.tk',
-        'www.greenline.test.02.team-shiny-99-99-9299.tk',
+        '54.250.185.97',
     ]
 
 
